@@ -41,16 +41,6 @@ install.packages(c("shiny","bslib","DT","plotly","dplyr","readr"))
 
 ---
 
-## Agregar el dataset
-
-1. Descarga el CSV desde Kaggle:
-   https://www.kaggle.com/datasets/alexteboul/heart-disease-health-indicators-dataset/data
-
-2. Guárdalo en:
-   `shiny_app/docs/heart_disease_health_indicators_BRFSS2015.csv`
-
----
-
 ## Ejecutar la app
 
 **Opción A — RStudio:**

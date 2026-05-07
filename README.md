@@ -21,7 +21,7 @@ shiny_app/
 └── R/
     ├── home.R, objetivos.R, marco_teorico.R
     ├── metodologia.R, carga.R, limpieza.R
-    ├── resultados.R, sintesis.R, referencias.R
+    ├── resultados.R, metricas.R, modelo.R,sintesis.R, referencias.R
 ```
 
 ---

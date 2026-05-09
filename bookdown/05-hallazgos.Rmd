@@ -1,0 +1,86 @@
+# Hallazgos principales {#hallazgos}
+
+El análisis exploratorio sobre el dataset BRFSS 2015 permite extraer los siguientes
+hallazgos en relación con el objetivo general.
+
+## Factores con mayor asociación {#factores-principales}
+
+### Factores clínicos y funcionales (alta magnitud)
+
+| Variable | V de Cramér | Observación clave |
+|---|---|---|
+| **GenHlth** | 0.274 | Gradiente casi lineal: 2.2% (Excelente) → 34.0% (Mala) |
+| **Age** | 0.233 | Monotónico: 0.5% (18–24) → 24.0% (80+) |
+| **DiffWalk** | 0.213 | 3.5× más riesgo en quienes reportan dificultad funcional |
+| **HighBP** | 0.209 | Cuadruplica la tasa: 16.5% vs 4.1% |
+| **Stroke** | 0.203 | Tasa absoluta más alta entre binarias: 38.3% |
+| **Diabetes** | 0.180 | Gradiente triplicado: 7.2% → 14.3% → 22.3% |
+
+### Factores conductuales (magnitud moderada)
+
+- El **tabaquismo** (V=0.114) duplica el riesgo (13.2% vs 6.4%).
+- La **inactividad física** (V=0.087) eleva la tasa 1.75× frente a personas activas.
+- El **sexo** (V=0.086): hombres 12.3% vs mujeres 7.2%.
+
+### Determinantes socioeconómicos
+
+A mayor **ingreso** (V=0.144) y **nivel educativo** (V=0.101), menor tasa de
+enfermedad cardíaca, evidenciando inequidades estructurales en salud cardiovascular.
+
+## Interacciones sinérgicas {#interacciones-hallazgos}
+
+```{r tabla-interacciones, echo=FALSE}
+int_df <- data.frame(
+  Combinacion = c("HighBP × HighChol", "Stroke × HighBP", "DiffWalk × GenHlth (Mala)"),
+  Tasa_ambos  = c("21.1%", "42.0%", "36.8%"),
+  Tasa_ninguno = c("2.8%", "7.1% (sin ACV + sin HTA)", "2.2% (sin dif. + Excelente)"),
+  Factor      = c("7.5×", "5.9×", "16.7×")
+)
+
+kable(int_df,
+      col.names = c("Combinación de factores","Tasa (ambos presentes)","Tasa (referencia)","Factor"),
+      caption = "Efectos sinérgicos entre pares de factores de riesgo") |>
+  kable_styling(bootstrap_options = c("striped","hover"), full_width = FALSE)
+```
+
+Las interacciones refuerzan la **naturaleza multifactorial** de la enfermedad cardíaca
+y anticipan que modelos capaces de capturar relaciones no lineales (como XGBoost)
+serán más efectivos.
+
+## Variables con baja utilidad individual {#variables-bajas}
+
+```{r tabla-bajas, echo=FALSE}
+data.frame(
+  Variable = c("Fruits","AnyHealthcare","HvyAlcoholConsump","Veggies","CholCheck"),
+  V_Cramer = c(0.0198, 0.0187, 0.0290, 0.0392, 0.0442),
+  Nota = c(
+    "Diferencia de tasas marginal (10.2% vs 9.0%)",
+    "Sesgo de detección: cobertura médica → más diagnósticos",
+    "Asociación inversa: sesgo del 'bebedor enfermo'",
+    "Efecto dietético aislado modesto",
+    "Sesgo de detección similar a AnyHealthcare"
+  )
+) |>
+  kable(col.names = c("Variable","V de Cramér","Interpretación"),
+        caption = "Variables con menor poder discriminatorio") |>
+  kable_styling(bootstrap_options = c("striped","hover"), full_width = FALSE, font_size = 11)
+```
+
+## Consideraciones para el modelado {#consideraciones-modelado}
+
+```{r consideraciones, echo=FALSE}
+data.frame(
+  Aspecto = c("Desbalance de clases",
+              "Variables prioritarias",
+              "Distribuciones asimétricas",
+              "Variables de baja utilidad"),
+  Accion  = c("Aplicar class_weight='balanced' / scale_pos_weight; optimizar Recall",
+              "Incluir obligatoriamente: GenHlth, Age, DiffWalk, HighBP, Stroke, HighChol",
+              "BMI, MentHlth y PhysHlth requieren escalado o modelos robustos a outliers",
+              "Fruits, AnyHealthcare, HvyAlcoholConsump → evaluar para reducción dimensional")
+) |>
+  kable(col.names = c("Aspecto","Acción recomendada"),
+        caption = "Consideraciones para la etapa de modelado") |>
+  kable_styling(bootstrap_options = c("striped","hover"), full_width = FALSE) |>
+  column_spec(1, bold = TRUE)
+```

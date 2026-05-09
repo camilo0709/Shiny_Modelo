@@ -1,0 +1,269 @@
+# Análisis bivariado {#bivariado}
+
+Se examina la relación de cada variable predictora con `HeartDiseaseorAttack`:
+
+- **Variables binarias y ordinales → Chi-cuadrado + V de Cramér**
+- **Variables continuas → Mann-Whitney U + |r| de Pearson**
+
+```{r bivar-setup, echo=FALSE}
+# Función genérica: Chi² + V de Cramér + tasa
+bivar_df <- function(var) {
+  ct    <- table(df[[var]], df[["HeartDiseaseorAttack"]])
+  chi   <- chisq.test(ct, correct = FALSE)
+  n     <- sum(ct)
+  cram  <- sqrt(chi$statistic / (n * (min(dim(ct)) - 1)))
+  tasa  <- prop.table(ct, margin = 1)[, 2] * 100
+  list(chi2 = chi$statistic, pval = chi$p.value, cramer = cram, tasa = tasa)
+}
+```
+
+## Correlación global con la variable objetivo {#correlacion}
+
+```{r correlacion-global, fig.height=6, fig.cap="Correlaciones de Pearson con HeartDiseaseorAttack"}
+corr_vals <- cor(df)[, "HeartDiseaseorAttack"]
+corr_vals <- sort(corr_vals[names(corr_vals) != "HeartDiseaseorAttack"], decreasing = TRUE)
+
+df_corr <- data.frame(Variable = names(corr_vals), r = as.numeric(corr_vals))
+
+ggplot(df_corr, aes(x = r, y = reorder(Variable, r), fill = r > 0)) +
+  geom_col(color = "white", width = 0.65) +
+  scale_fill_manual(values = c(bajo_color, riesgo_color)) +
+  geom_text(aes(label = round(r, 3),
+                hjust = ifelse(r >= 0, -0.1, 1.1)),
+            size = 3, color = "#3a3a3a") +
+  geom_vline(xintercept = 0, linetype = "dashed", linewidth = 0.6) +
+  labs(title = "Correlación de Pearson con HeartDiseaseorAttack",
+       x = "Correlación", y = NULL) +
+  theme(legend.position = "none")
+```
+
+Las correlaciones más altas son **GenHlth** (0.258), **Age** (0.222), **DiffWalk** (0.213),
+**HighBP** (0.209) y **Stroke** (0.203). Las correlaciones negativas más relevantes son
+**Income** (−0.141) y **Education** (−0.100).
+
+## Variables binarias {#bivar-binarias}
+
+```{r bivar-binarias-tabla, echo=FALSE}
+resumen_biv_bin <- do.call(rbind, lapply(binary_vars, function(v) {
+  res  <- bivar_df(v)
+  tasas <- res$tasa
+  data.frame(
+    Variable  = v,
+    Chi2      = round(res$chi2, 1),
+    p_valor   = formatC(res$pval, format = "e", digits = 2),
+    V_Cramer  = round(res$cramer, 4),
+    Tasa_0    = paste0(round(tasas[1], 2), "%"),
+    Tasa_1    = paste0(round(tasas[2], 2), "%")
+  )
+}))
+
+kable(resumen_biv_bin,
+      col.names = c("Variable","Chi²","p-valor","V de Cramér","Tasa (cat. 0)","Tasa (cat. 1)"),
+      caption = "Asociación entre variables binarias y HeartDiseaseorAttack") |>
+  kable_styling(bootstrap_options = c("striped","hover"), full_width = FALSE, font_size = 11) |>
+  column_spec(4, bold = TRUE,
+              color = ifelse(as.numeric(resumen_biv_bin$V_Cramer) > 0.15, riesgo_color, "black"))
+```
+
+```{r bivar-binarias-plot, fig.height=5, fig.cap="Tasas de enfermedad cardíaca por variable binaria"}
+tasas_bin <- do.call(rbind, lapply(binary_vars, function(v) {
+  ct    <- table(df[[v]], df[["HeartDiseaseorAttack"]])
+  cram  <- bivar_df(v)$cramer
+  tasa  <- prop.table(ct, margin = 1)[, 2] * 100
+  data.frame(Variable = v,
+             Categoria = names(tasa),
+             Tasa = as.numeric(tasa),
+             V = round(cram, 4))
+}))
+
+ggplot(tasas_bin, aes(x = Tasa, y = reorder(Variable, Tasa),
+                       fill = Categoria)) +
+  geom_col(position = "dodge", width = 0.6, color = "white") +
+  scale_fill_manual(values = c(bajo_color, riesgo_color)) +
+  scale_x_continuous(labels = function(x) paste0(x, "%")) +
+  labs(title = "Tasa de HD por categoría — Variables binarias",
+       x = "% con enfermedad cardíaca", y = NULL, fill = "Categoría") +
+  theme(legend.position = "bottom")
+```
+
+**Hallazgos clave:**
+
+- **HighBP** (V=0.209): cuadruplica la tasa de HD (16.5% vs 4.1%).
+- **Stroke** (V=0.203): tasa absoluta más alta entre binarias (38.3%).
+- **DiffWalk** (V=0.213): quienes reportan dificultad tienen 3.5× más riesgo.
+- **Smoker** (V=0.114): los fumadores duplican la tasa (13.2% vs 6.4%).
+
+## Variables ordinales {#bivar-ordinales}
+
+```{r bivar-ordinales-tabla, echo=FALSE}
+resumen_biv_ord <- do.call(rbind, lapply(ordinal_vars, function(v) {
+  res <- bivar_df(v)
+  data.frame(
+    Variable = v,
+    Chi2     = round(res$chi2, 1),
+    p_valor  = formatC(res$pval, format = "e", digits = 2),
+    V_Cramer = round(res$cramer, 4),
+    Tasa_min = paste0(round(min(res$tasa), 2), "%"),
+    Tasa_max = paste0(round(max(res$tasa), 2), "%")
+  )
+}))
+
+kable(resumen_biv_ord,
+      col.names = c("Variable","Chi²","p-valor","V de Cramér","Tasa mínima","Tasa máxima"),
+      caption = "Asociación entre variables ordinales y HeartDiseaseorAttack") |>
+  kable_styling(bootstrap_options = c("striped","hover"), full_width = FALSE, font_size = 11)
+```
+
+```{r genhlth-plot, fig.cap="Tasa de HD por nivel de GenHlth"}
+genhlth_tasa <- df |>
+  group_by(GenHlth = factor(GenHlth, levels = 1:5,
+             labels = c("Excelente","Muy buena","Buena","Regular","Mala"),
+             ordered = TRUE)) |>
+  summarise(tasa = mean(HeartDiseaseorAttack) * 100)
+
+ggplot(genhlth_tasa, aes(x = GenHlth, y = tasa, fill = GenHlth)) +
+  geom_col(color = "white", width = 0.6) +
+  geom_text(aes(label = paste0(round(tasa,1),"%")),
+            vjust = -0.4, size = 4, color = "#3a3a3a") +
+  scale_fill_manual(values = colorRampPalette(c(bajo_color, riesgo_color))(5)) +
+  scale_y_continuous(labels = function(x) paste0(x,"%"),
+                     expand = expansion(mult = c(0,0.15))) +
+  labs(title = "GenHlth: predictor individual más fuerte (V=0.274)",
+       x = "Autopercepción de salud", y = "% con enfermedad cardíaca") +
+  theme(legend.position = "none")
+```
+
+```{r age-bivar-plot, fig.cap="Tasa de HD por grupo etario"}
+age_tasa <- df |>
+  group_by(Age = factor(Age, levels = 1:13, labels = age_labels, ordered = TRUE)) |>
+  summarise(tasa = mean(HeartDiseaseorAttack) * 100)
+
+ggplot(age_tasa, aes(x = Age, y = tasa)) +
+  geom_col(fill = nude_palette[2], color = "white", width = 0.7) +
+  geom_text(aes(label = paste0(round(tasa,1),"%")),
+            vjust = -0.4, size = 2.8, color = "#3a3a3a") +
+  scale_y_continuous(labels = function(x) paste0(x,"%"),
+                     expand = expansion(mult = c(0,0.15))) +
+  labs(title = "Age: gradiente monótono de riesgo (V=0.233)",
+       x = "Grupo etario", y = "% con enfermedad cardíaca") +
+  theme(axis.text.x = element_text(angle = 35, hjust = 1))
+```
+
+## Variables continuas {#bivar-continuas}
+
+```{r bivar-continuas-tabla, echo=FALSE}
+resumen_biv_cont <- do.call(rbind, lapply(continuous_vars, function(v) {
+  g0   <- df[df$HeartDiseaseorAttack == 0, v]
+  g1   <- df[df$HeartDiseaseorAttack == 1, v]
+  mw   <- wilcox.test(g0, g1, exact = FALSE)
+  r    <- abs(cor(df[[v]], df$HeartDiseaseorAttack))
+  data.frame(
+    Variable   = v,
+    Media_0    = round(mean(g0), 2),
+    Mediana_0  = round(median(g0), 1),
+    Media_1    = round(mean(g1), 2),
+    Mediana_1  = round(median(g1), 1),
+    p_valor    = formatC(mw$p.value, format = "e", digits = 2),
+    r_Pearson  = round(r, 4)
+  )
+}))
+
+kable(resumen_biv_cont,
+      col.names = c("Variable","Media (sin HD)","Mediana (sin HD)",
+                    "Media (con HD)","Mediana (con HD)","p-valor MW","|r| Pearson"),
+      caption = "Mann-Whitney y correlación — Variables continuas") |>
+  kable_styling(bootstrap_options = c("striped","hover"), full_width = FALSE, font_size = 11)
+```
+
+```{r bivar-continuas-boxplot, fig.height=4, fig.cap="Distribución de variables continuas por clase"}
+df_box <- df |>
+  select(HeartDiseaseorAttack, all_of(continuous_vars)) |>
+  mutate(Clase = ifelse(HeartDiseaseorAttack == 1, "Con HD", "Sin HD")) |>
+  pivot_longer(all_of(continuous_vars), names_to = "Variable", values_to = "Valor")
+
+ggplot(df_box, aes(x = Clase, y = Valor, fill = Clase)) +
+  geom_boxplot(outlier.size = 0.5, outlier.alpha = 0.15) +
+  stat_summary(fun = mean, geom = "point", shape = 18, size = 2.5, color = "black") +
+  scale_fill_manual(values = c(bajo_color, riesgo_color)) +
+  facet_wrap(~Variable, scales = "free_y") +
+  labs(title = "Variables continuas por clase (♦ = media)",
+       x = NULL, y = "Valor") +
+  theme(legend.position = "none",
+        strip.text = element_text(face = "bold"))
+```
+
+## Interacciones entre factores {#interacciones}
+
+```{r interacciones, fig.height=4, fig.cap="Efectos sinérgicos entre pares de factores de riesgo"}
+pivot1 <- df |>
+  mutate(HighBP_lbl  = ifelse(HighBP==1,"Con HTA","Sin HTA"),
+         HighChol_lbl = ifelse(HighChol==1,"Con Col. alto","Sin Col. alto")) |>
+  group_by(HighBP_lbl, HighChol_lbl) |>
+  summarise(tasa = mean(HeartDiseaseorAttack)*100, .groups="drop")
+
+p_int1 <- ggplot(pivot1, aes(x = HighBP_lbl, y = HighChol_lbl, fill = tasa)) +
+  geom_tile() +
+  geom_text(aes(label = paste0(round(tasa,1),"%")), color = "white", size = 5) +
+  scale_fill_gradient(low = bajo_color, high = riesgo_color) +
+  labs(title = "HighBP × HighChol", x = NULL, y = NULL, fill = "% HD") +
+  theme(legend.position = "right")
+
+pivot2 <- df |>
+  mutate(Stroke_lbl = ifelse(Stroke==1,"Con ACV","Sin ACV"),
+         HighBP_lbl = ifelse(HighBP==1,"Con HTA","Sin HTA")) |>
+  group_by(Stroke_lbl, HighBP_lbl) |>
+  summarise(tasa = mean(HeartDiseaseorAttack)*100, .groups="drop")
+
+p_int2 <- ggplot(pivot2, aes(x = Stroke_lbl, y = HighBP_lbl, fill = tasa)) +
+  geom_tile() +
+  geom_text(aes(label = paste0(round(tasa,1),"%")), color = "white", size = 5) +
+  scale_fill_gradient(low = bajo_color, high = riesgo_color) +
+  labs(title = "Stroke × HighBP", x = NULL, y = NULL, fill = "% HD") +
+  theme(legend.position = "right")
+
+grid.arrange(p_int1, p_int2, ncol = 2)
+```
+
+**Efectos sinérgicos detectados:**
+
+- **HighBP × HighChol** → 21.1% vs 2.8% (sin ninguno) — diferencia de 7.5×
+- **Stroke × HighBP** → 42.0% — la tasa más alta del análisis
+- **DiffWalk × GenHlth "Mala"** → 36.8%
+
+## Ranking de importancia bivariada {#ranking}
+
+```{r ranking-plot, fig.height=7, fig.cap="Ranking de asociación de todas las variables con el target"}
+scores <- c(
+  sapply(c(binary_vars, ordinal_vars), function(v) {
+    ct  <- table(df[[v]], df$HeartDiseaseorAttack)
+    chi <- chisq.test(ct, correct = FALSE)$statistic
+    n   <- sum(ct)
+    sqrt(chi / (n * (min(dim(ct)) - 1)))
+  }),
+  sapply(continuous_vars, function(v) abs(cor(df[[v]], df$HeartDiseaseorAttack)))
+)
+
+df_scores <- data.frame(
+  Variable = names(scores),
+  Score    = as.numeric(scores),
+  Tipo     = c(rep("Binaria", length(binary_vars)),
+               rep("Ordinal", length(ordinal_vars)),
+               rep("Continua", length(continuous_vars)))
+) |> arrange(desc(Score))
+
+ggplot(df_scores, aes(x = Score, y = reorder(Variable, Score),
+                       fill = case_when(Score > 0.15 ~ "Alta (>0.15)",
+                                        Score > 0.08 ~ "Moderada (>0.08)",
+                                        TRUE          ~ "Baja"))) +
+  geom_col(color = "white", width = 0.65) +
+  scale_fill_manual(values = c("Alta (>0.15)" = riesgo_color,
+                                "Moderada (>0.08)" = "#E67E22",
+                                "Baja" = bajo_color)) +
+  geom_vline(xintercept = c(0.08, 0.15), linetype = "dashed",
+             color = c("#E67E22", riesgo_color), linewidth = 0.7) +
+  geom_text(aes(label = round(Score, 4)), hjust = -0.1, size = 3) +
+  labs(title = "Ranking de asociación con HeartDiseaseorAttack",
+       subtitle = "V de Cramér para categóricas · |r| de Pearson para continuas",
+       x = "Score", y = NULL, fill = "Magnitud") +
+  theme(legend.position = "bottom")
+```

@@ -1,0 +1,94 @@
+/* ── Fuentes ── */
+body {
+  font-family: 'Lato', 'Source Sans Pro', sans-serif;
+  font-size: 16px;
+  line-height: 1.7;
+  color: #2c2c2c;
+}
+
+/* ── Encabezados ── */
+h1, h2, h3, h4 {
+  font-weight: 700;
+  color: #2C3E6B;
+  margin-top: 2rem;
+}
+
+h1 { border-bottom: 3px solid #C0392B; padding-bottom: 0.4rem; }
+h2 { border-left: 4px solid #C0392B; padding-left: 0.6rem; }
+
+/* ── Código ── */
+pre, code {
+  background-color: #f4f4f7;
+  border-radius: 4px;
+  font-size: 0.88em;
+}
+pre {
+  padding: 1rem;
+  border-left: 3px solid #2C3E6B;
+}
+
+/* ── Tablas ── */
+table {
+  font-size: 0.9em;
+  margin: 1.5rem auto;
+}
+thead {
+  background-color: #2C3E6B;
+  color: white;
+}
+tbody tr:nth-child(even) { background-color: #f9f0f0; }
+tbody tr:hover            { background-color: #fde8e8; }
+
+/* ── Callouts / bloques destacados ── */
+blockquote {
+  border-left: 4px solid #C0392B;
+  background: #fdf6f6;
+  padding: 0.8rem 1.2rem;
+  border-radius: 0 6px 6px 0;
+  color: #555;
+}
+
+/* ── TOC lateral ── */
+.book .book-summary {
+  background: #1a2545;
+  color: #cdd6e8;
+}
+.book .book-summary ul.summary li a {
+  color: #cdd6e8;
+  font-size: 0.92em;
+}
+.book .book-summary ul.summary li.active > a {
+  color: #f0c0bb;
+  font-weight: bold;
+}
+.book .book-summary ul.summary li a:hover {
+  background: #2C3E6B;
+  color: white;
+}
+
+/* ── Toolbar ── */
+.book .book-header {
+  background: #2C3E6B;
+  color: white;
+}
+.book .book-header .btn { color: white; }
+
+/* ── Figuras ── */
+img {
+  border-radius: 6px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+  max-width: 100%;
+}
+.caption {
+  font-size: 0.85em;
+  color: #777;
+  text-align: center;
+  margin-top: 0.4rem;
+}
+
+/* ── Links ── */
+a { color: #C0392B; }
+a:hover { color: #2C3E6B; text-decoration: underline; }
+
+/* ── Páginas ── */
+.page-inner { max-width: 820px; }

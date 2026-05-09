@@ -1,0 +1,30 @@
+# Carpeta de output del libro
+_book/
+_bookdown_files/
+
+# Archivos temporales de R
+.Rhistory
+.RData
+.Rproj.user/
+*.Rproj
+
+# Dataset (puede ser pesado o privado)
+data/*.csv
+data/*.xlsx
+
+# Cache de knitr
+*_cache/
+*_files/
+
+# LaTeX auxiliares
+*.aux
+*.log
+*.out
+*.toc
+*.lof
+*.lot
+*.synctex.gz
+
+# OS
+.DS_Store
+Thumbs.db

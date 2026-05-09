@@ -1,0 +1,132 @@
+# Introducción {#introduccion}
+
+## Contexto
+
+Las enfermedades cardíacas representan la principal causa de muerte en Estados Unidos,
+cobrando aproximadamente 647.000 vidas cada año y generando una de las mayores cargas
+económicas y sanitarias del país. A diferencia de otras enfermedades, la cardiopatía
+coronaria avanza de forma silenciosa: la acumulación de placa en las arterias, la
+inflamación crónica, la hipertensión y la diabetes deterioran el sistema cardiovascular
+durante años antes de que aparezca cualquier síntoma visible.
+
+Un estudio reciente de la American Heart Association reportó que las muertes hospitalarias
+por infarto severo en adultos menores de 55 años aumentaron un 57% entre 2011 y 2022.
+Las mujeres jóvenes presentaron tasas de mortalidad más altas que los hombres del mismo
+grupo etario, frecuentemente asociadas a factores no tradicionales como los bajos ingresos.
+
+## Objetivo general
+
+Examinar, a través de técnicas de análisis exploratorio y modelado predictivo, qué
+factores conductuales, clínicos y sociodemográficos presentan mayor asociación con el
+riesgo de enfermedad cardíaca en adultos estadounidenses, construyendo un clasificador
+capaz de predecir la presencia de la enfermedad a partir de respuestas de encuesta
+poblacional.
+
+## Objetivos específicos
+
+1. Describir la distribución de las variables clínicas, conductuales y sociodemográficas
+   del BRFSS 2015.
+2. Analizar el desbalance de clases en la variable objetivo (`HeartDiseaseorAttack`).
+3. Examinar la relación entre los factores de riesgo cardiovascular y la presencia de
+   enfermedad cardíaca.
+4. Comparar el perfil de salud entre individuos con y sin enfermedad cardíaca.
+5. Construir y comparar modelos de clasificación supervisada.
+
+## Marco teórico
+
+### Enfermedades cardíacas e insuficiencia cardíaca
+
+La insuficiencia cardíaca es un trastorno en el que el corazón es incapaz de satisfacer
+las demandas del organismo, generando reducción del flujo sanguíneo y congestión en venas
+y pulmones. Puede originarse por causas directas —debilitamiento o rigidez del músculo
+cardíaco— o indirectas, producto de hipertensión arterial, diabetes o valvulopatías.
+
+### El sistema BRFSS como fuente de datos
+
+El **Sistema de Vigilancia de Factores de Riesgo Conductuales (BRFSS)** es el principal
+sistema nacional de encuestas telefónicas sobre salud en Estados Unidos, administrado por
+los CDC desde 1984. Recopila datos en los 50 estados, el Distrito de Columbia y territorios
+participantes, con más de 400.000 entrevistas a adultos cada año.
+
+### Métricas estadísticas utilizadas
+
+- **Chi-cuadrado (χ²):** evalúa asociación significativa entre variables categóricas.
+- **V de Cramér:** mide la magnitud de la asociación en el rango [0, 1].
+- **Mann-Whitney U:** prueba no paramétrica para comparar distribuciones continuas entre grupos.
+- **Correlación de Pearson (r):** mide fuerza y dirección de relación lineal entre variables numéricas.
+
+### Algoritmos de clasificación
+
+- **Regresión Logística:** clasificador binario con fundamentos probabilísticos.
+- **Random Forest:** ensamble de árboles de decisión no correlacionados.
+- **XGBoost:** gradient boosting optimizado, robusto ante datos desbalanceados.
+- **K-Nearest Neighbors (KNN):** clasificación por proximidad en espacio de características.
+
+### Manejo de clases desbalanceadas
+
+Con una proporción de 90.6% vs 9.4%, se aplican estrategias como `class_weight = "balanced"`
+y `scale_pos_weight` en XGBoost, junto con validación cruzada estratificada y optimización
+del **Recall** como métrica principal.
+
+## Descripción del dataset
+
+```{r carga-datos}
+df <- read.csv("data/heart_disease_health_indicators_BRFSS2015.csv")
+
+cat("Dimensiones:", nrow(df), "filas x", ncol(df), "columnas\n")
+```
+
+```{r clasificacion-variables}
+target          <- "HeartDiseaseorAttack"
+binary_vars     <- c("HighBP","HighChol","CholCheck","Smoker","Stroke",
+                     "PhysActivity","Fruits","Veggies","HvyAlcoholConsump",
+                     "AnyHealthcare","NoDocbcCost","DiffWalk","Sex")
+ordinal_vars    <- c("GenHlth","Age","Education","Income","Diabetes")
+continuous_vars <- c("BMI","MentHlth","PhysHlth")
+```
+
+```{r diccionario, echo=FALSE}
+dict_df <- data.frame(
+  Variable = c("HeartDiseaseorAttack","HighBP","HighChol","CholCheck","BMI",
+               "Smoker","Stroke","Diabetes","PhysActivity","Fruits","Veggies",
+               "HvyAlcoholConsump","AnyHealthcare","NoDocbcCost","GenHlth",
+               "MentHlth","PhysHlth","DiffWalk","Sex","Age","Education","Income"),
+  Tipo = c("Binaria (objetivo)","Binaria","Binaria","Binaria","Continua",
+           "Binaria","Binaria","Ordinal (3 niv.)","Binaria","Binaria","Binaria",
+           "Binaria","Binaria","Binaria","Ordinal",
+           "Continua","Continua","Binaria","Binaria","Ordinal","Ordinal","Ordinal"),
+  Escala = c("0/1","0/1","0/1","0/1","12–98",
+             "0/1","0/1","0/1/2","0/1","0/1","0/1",
+             "0/1","0/1","0/1","1–5",
+             "0–30","0–30","0/1","0/1","1–13","1–6","1–8"),
+  Descripcion = c(
+    "Reportó enfermedad coronaria o infarto",
+    "Diagnóstico de presión arterial alta",
+    "Diagnóstico de colesterol alto",
+    "Revisión de colesterol en últimos 5 años",
+    "Índice de masa corporal",
+    "Fumó ≥ 100 cigarrillos en su vida",
+    "Diagnóstico de derrame cerebral (ACV)",
+    "0=Sin diabetes · 1=Prediabetes · 2=Confirmada",
+    "Actividad física en últimos 30 días",
+    "Consume frutas ≥ 1 vez al día",
+    "Consume verduras ≥ 1 vez al día",
+    "Consumo excesivo de alcohol",
+    "Tiene cobertura o seguro médico",
+    "No fue al médico por costo en el último año",
+    "Autopercepción de salud (1=Excelente · 5=Mala)",
+    "Días con mala salud mental en el último mes",
+    "Días con mala salud física en el último mes",
+    "Dificultad seria para caminar o subir escaleras",
+    "0 = Mujer · 1 = Hombre",
+    "Grupo etario (1=18–24 · 13=80+)",
+    "Nivel educativo (1=Sin escolaridad · 6=Universitario)",
+    "Ingreso anual del hogar (1=<$10k · 8=≥$75k)"
+  )
+)
+
+kable(dict_df, caption = "Diccionario de variables del dataset BRFSS 2015",
+      col.names = c("Variable","Tipo","Escala","Descripción")) |>
+  kable_styling(bootstrap_options = c("striped","hover","condensed"),
+                full_width = FALSE, font_size = 12)
+```

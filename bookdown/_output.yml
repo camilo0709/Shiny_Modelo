@@ -1,0 +1,20 @@
+bookdown::gitbook:
+  css: style.css
+  split_by: chapter
+  config:
+    toc:
+      collapse: subsection
+      scroll_highlight: yes
+    toolbar:
+      position: fixed
+    download: ["pdf"]
+    sharing:
+      github: yes
+  includes:
+    in_header: header.html
+
+bookdown::pdf_book:
+  keep_tex: no
+  latex_engine: xelatex
+  includes:
+    in_header: preamble.tex

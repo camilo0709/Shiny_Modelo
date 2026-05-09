@@ -1,0 +1,175 @@
+# Análisis univariado {#univariado}
+
+Se analiza la distribución de cada variable según su naturaleza estadística:
+barras verticales para binarias, barras horizontales para ordinales, e
+histogramas/barras por valor exacto para continuas.
+
+```{r funciones-univariado, echo=FALSE}
+# Función para gráfico de barras binario
+plot_binary <- function(var, etiquetas, titulo) {
+  conteos     <- table(df[[var]])
+  porcentajes <- round(prop.table(conteos) * 100, 2)
+  df_p <- data.frame(
+    Categoria  = etiquetas,
+    Conteo     = as.numeric(conteos),
+    Porcentaje = as.numeric(porcentajes)
+  )
+  ggplot(df_p, aes(x = Categoria, y = Conteo, fill = Categoria)) +
+    geom_col(width = 0.5, color = "white") +
+    geom_text(aes(label = paste0(Porcentaje, "%")),
+              vjust = -0.5, size = 4, color = "#3a3a3a") +
+    scale_fill_manual(values = nude_palette) +
+    scale_y_continuous(labels = comma, expand = expansion(mult = c(0, 0.15))) +
+    labs(title = titulo, x = NULL, y = "Número de registros") +
+    theme(legend.position = "none")
+}
+
+# Función para gráfico de barras ordinal (horizontal)
+plot_ordinal <- function(var, etiquetas, titulo, colores = NULL) {
+  conteos     <- table(df[[var]])
+  porcentajes <- round(prop.table(conteos) * 100, 2)
+  if (is.null(colores)) colores <- colorRampPalette(nude_palette)(length(etiquetas))
+  df_p <- data.frame(
+    Categoria  = factor(etiquetas, levels = rev(etiquetas)),
+    Conteo     = as.numeric(conteos),
+    Porcentaje = as.numeric(porcentajes)
+  )
+  ggplot(df_p, aes(x = Conteo, y = Categoria, fill = Categoria)) +
+    geom_col(width = 0.5, color = "white") +
+    geom_text(aes(label = paste0(Porcentaje, "%")),
+              hjust = -0.1, size = 3.8, color = "#3a3a3a") +
+    scale_fill_manual(values = rev(colores)) +
+    scale_x_continuous(labels = comma, expand = expansion(mult = c(0, 0.22))) +
+    labs(title = titulo, x = "Número de registros", y = NULL) +
+    theme(legend.position = "none")
+}
+```
+
+## Variable objetivo {#objetivo}
+
+```{r objetivo, fig.cap="Distribución de la variable objetivo HeartDiseaseorAttack"}
+plot_binary("HeartDiseaseorAttack",
+            c("Sin enfermedad cardíaca","Con enfermedad cardíaca"),
+            "Distribución de la variable objetivo")
+```
+
+La variable objetivo presenta un marcado **desbalance de clases**: el **90.58%**
+(229.787 personas) no reportó enfermedad cardíaca, frente al **9.42%** (23.893
+personas) que sí lo hizo. Este desbalance requiere estrategias específicas en el
+modelado (métricas ajustadas, ajuste de pesos de clase).
+
+## Variables binarias {#binarias}
+
+```{r binarias-plots, fig.height=4, fig.cap="Variables binarias seleccionadas"}
+p1 <- plot_binary("HighBP",    c("Sin hipertensión","Con hipertensión"),
+                  "HighBP: Presión arterial alta")
+p2 <- plot_binary("HighChol",  c("Sin colesterol alto","Con colesterol alto"),
+                  "HighChol: Colesterol alto")
+p3 <- plot_binary("Smoker",    c("No fumador","Fumador"),
+                  "Smoker: Fumador")
+p4 <- plot_binary("Stroke",    c("Sin ACV","Con ACV"),
+                  "Stroke: Derrame cerebral")
+p5 <- plot_binary("DiffWalk",  c("Sin dificultad","Con dificultad"),
+                  "DiffWalk: Dificultad al caminar")
+p6 <- plot_binary("Sex",       c("Mujer","Hombre"),
+                  "Sex: Sexo del encuestado")
+grid.arrange(p1, p2, p3, p4, p5, p6, ncol = 3)
+```
+
+```{r binarias-tabla, echo=FALSE}
+resumen_bin <- do.call(rbind, lapply(binary_vars, function(v) {
+  ct <- table(df[[v]])
+  pct <- round(prop.table(ct) * 100, 2)
+  data.frame(Variable = v,
+             N_0 = format(ct[1], big.mark=","),
+             Pct_0 = paste0(pct[1],"%"),
+             N_1 = format(ct[2], big.mark=","),
+             Pct_1 = paste0(pct[2],"%"))
+}))
+
+kable(resumen_bin,
+      col.names = c("Variable","N (0)","% (0)","N (1)","% (1)"),
+      caption = "Frecuencias de variables binarias") |>
+  kable_styling(bootstrap_options = c("striped","hover"),
+                full_width = FALSE, font_size = 12)
+```
+
+## Variables ordinales {#ordinales}
+
+```{r ordinales-plots, fig.height=5, fig.cap="Variables ordinales"}
+p_db  <- plot_ordinal("Diabetes",
+                      c("Sin diabetes","Prediabetes","Diabetes confirmada"),
+                      "Diabetes",
+                      colores = c(riesgo_color, nude_palette[2], "#4A7C59"))
+p_gh  <- plot_ordinal("GenHlth",
+                      c("Excelente","Muy buena","Buena","Regular","Mala"),
+                      "GenHlth: Salud general autopercibida",
+                      colores = c(riesgo_color, "#E67E22", "#4A7C59", nude_palette[2], "#6B3A5A"))
+p_inc <- plot_ordinal("Income",
+                      c("< $10,000","$10,000–15,000","$15,000–20,000","$20,000–25,000",
+                        "$25,000–35,000","$35,000–50,000","$50,000–75,000","$75,000+"),
+                      "Income: Ingreso anual del hogar")
+grid.arrange(p_db, p_gh, p_inc, ncol = 1)
+```
+
+```{r age-plot, fig.height=4, fig.cap="Distribución por grupo etario"}
+plot_ordinal("Age", age_labels, "Age: Grupo etario")
+```
+
+## Variables continuas {#continuas}
+
+### BMI
+
+```{r bmi-resumen, echo=FALSE}
+q1_b <- quantile(df$BMI, 0.25); q3_b <- quantile(df$BMI, 0.75)
+iqr_b <- q3_b - q1_b
+data.frame(
+  Metrica = c("Media","Mediana","Desv. estándar","Q1","Q3","IQR","Min","Max"),
+  Valor   = round(c(mean(df$BMI), median(df$BMI), sd(df$BMI),
+                    q1_b, q3_b, iqr_b, min(df$BMI), max(df$BMI)), 2)
+) |>
+  kable(caption = "Estadísticas descriptivas — BMI") |>
+  kable_styling(bootstrap_options = "striped", full_width = FALSE)
+```
+
+```{r bmi-hist, fig.cap="Distribución del Índice de Masa Corporal"}
+ggplot(df, aes(x = BMI)) +
+  geom_histogram(bins = 50, fill = riesgo_color, color = "white", alpha = 0.9) +
+  geom_vline(aes(xintercept = mean(BMI), color = "Media"),
+             linetype = "dashed", linewidth = 1.2) +
+  geom_vline(aes(xintercept = median(BMI), color = "Mediana"),
+             linetype = "dotdash", linewidth = 1.2) +
+  scale_color_manual(values = c("Media" = nude_palette[2], "Mediana" = "#4A7C59")) +
+  scale_y_continuous(labels = comma) +
+  labs(title = "Distribución de BMI", x = "BMI", y = "Frecuencia", color = NULL)
+```
+
+### MentHlth y PhysHlth
+
+```{r mentphys-plots, fig.height=4, fig.cap="Distribución de MentHlth y PhysHlth"}
+p_mh <- df |> count(MentHlth) |> mutate(pct = round(n/sum(n)*100,1)) |>
+  ggplot(aes(x = MentHlth, y = n)) +
+  geom_col(fill = riesgo_color, color = "white", alpha = 0.9) +
+  geom_text(data = ~ filter(.x, pct >= 0.5),
+            aes(label = paste0(pct,"%")), vjust = -0.4, size = 2.5) +
+  scale_x_continuous(breaks = seq(0,30,5)) +
+  scale_y_continuous(labels = comma) +
+  labs(title = "MentHlth: Días con mala salud mental",
+       x = "Número de días", y = "Frecuencia")
+
+p_ph <- df |> count(PhysHlth) |> mutate(pct = round(n/sum(n)*100,1)) |>
+  ggplot(aes(x = PhysHlth, y = n)) +
+  geom_col(fill = bajo_color, color = "white", alpha = 0.9) +
+  geom_text(data = ~ filter(.x, pct >= 0.5),
+            aes(label = paste0(pct,"%")), vjust = -0.4, size = 2.5) +
+  scale_x_continuous(breaks = seq(0,30,5)) +
+  scale_y_continuous(labels = comma) +
+  labs(title = "PhysHlth: Días con mala salud física",
+       x = "Número de días", y = "Frecuencia")
+
+grid.arrange(p_mh, p_ph, ncol = 1)
+```
+
+Ambas variables presentan distribuciones extremadamente asimétricas con concentración
+en 0 días (MentHlth: 69.3%; PhysHlth: 63.1%) y un repunte en 30 días que refleja el
+patrón de respuesta redondeada típico del autoreporte.

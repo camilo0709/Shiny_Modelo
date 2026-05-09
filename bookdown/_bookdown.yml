@@ -1,0 +1,14 @@
+book_filename: "eda-cardiaco"
+language:
+  ui:
+    chapter_name: "Capítulo "
+new_session: no
+rmd_files:
+  - index.Rmd
+  - 01-introduccion.Rmd
+  - 02-limpieza.Rmd
+  - 03-univariado.Rmd
+  - 04-bivariado.Rmd
+  - 05-hallazgos.Rmd
+  - 06-modelado.Rmd
+  - 07-referencias.Rmd

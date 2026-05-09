@@ -1,0 +1,29 @@
+# Referencias {#referencias}
+
+```{r referencias-setup, include=FALSE}
+# Este capítulo no requiere código ejecutable
+```
+
+## Bibliografía
+
+- Centers for Disease Control and Prevention. (2015). *Behavioral Risk Factor Surveillance System (BRFSS) 2015 Survey Data and Documentation*. U.S. Department of Health and Human Services. https://www.cdc.gov/brfss/annual_data/annual_2015.html
+
+- Teboul, A. (2021). *Heart Disease Health Indicators Dataset* [Dataset]. Kaggle. https://www.kaggle.com/datasets/alexteboul/heart-disease-health-indicators-dataset
+
+- American Heart Association. (2023). *Heart Disease and Stroke Statistics — 2023 Update*. Circulation, 147(8), e93–e621. https://doi.org/10.1161/CIR.0000000000001123
+
+- Chen, T., & Guestrin, C. (2016). XGBoost: A Scalable Tree Boosting System. *Proceedings of the 22nd ACM SIGKDD International Conference on Knowledge Discovery and Data Mining*, 785–794. https://doi.org/10.1145/2939672.2939785
+
+- Breiman, L. (2001). Random Forests. *Machine Learning*, 45(1), 5–32. https://doi.org/10.1023/A:1010933404324
+
+- Cramér, H. (1946). *Mathematical Methods of Statistics*. Princeton University Press.
+
+- Wickham, H. (2016). *ggplot2: Elegant Graphics for Data Analysis*. Springer-Verlag New York. https://ggplot2.tidyverse.org
+
+- Xie, Y. (2016). *bookdown: Authoring Books and Technical Documents with R Markdown*. Chapman and Hall/CRC. https://bookdown.org/yihui/bookdown/
+
+## Paquetes de R utilizados
+
+```{r session-info}
+sessionInfo()
+```

@@ -63,7 +63,7 @@ Los datos provienen del **Behavioral Risk Factor Surveillance System (BRFSS) 201
 
 - [Ver dataset en Kaggle](https://www.kaggle.com/datasets/alexteboul/heart-disease-health-indicators-dataset/data)
 - [Ver fuente original CDC](https://www.cdc.gov/brfss/annual_data/annual_2015.html)
-- [Ver Dashboad en tu navegador]((https://77nb09-camilo0andr0s-mujica0escorcia.shinyapps.io/heart-disease-dashboard/))
+- [Ver Dashboad en tu navegador](https://77nb09-camilo0andr0s-mujica0escorcia.shinyapps.io/heart-disease-dashboard/)
 ## Equipo
 
 Este proyecto fue desarrollado por:

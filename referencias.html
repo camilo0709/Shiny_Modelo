@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>Capítulo 7 Referencias | Análisis Exploratorio de Indicadores de Salud y Factores Asociados a Enfermedades Cardíacas</title>
+  <meta name="description" content="EDA sobre los factores de riesgo cardiovascular en el dataset BRFSS 2015, incluyendo análisis univariado, bivariado y modelado predictivo con XGBoost." />
+  <meta name="generator" content="bookdown 0.46 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="Capítulo 7 Referencias | Análisis Exploratorio de Indicadores de Salud y Factores Asociados a Enfermedades Cardíacas" />
+  <meta property="og:type" content="book" />
+  
+  <meta property="og:description" content="EDA sobre los factores de riesgo cardiovascular en el dataset BRFSS 2015, incluyendo análisis univariado, bivariado y modelado predictivo con XGBoost." />
+  
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Capítulo 7 Referencias | Análisis Exploratorio de Indicadores de Salud y Factores Asociados a Enfermedades Cardíacas" />
+  
+  <meta name="twitter:description" content="EDA sobre los factores de riesgo cardiovascular en el dataset BRFSS 2015, incluyendo análisis univariado, bivariado y modelado predictivo con XGBoost." />
+  
+
+<meta name="author" content="Alavarado Natalia y Mujica Camilo" />
+
+
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  
+<link rel="prev" href="modelado.html"/>
+
+<script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+<link href="libs/anchor-sections-1.1.0/anchor-sections.css" rel="stylesheet" />
+<link href="libs/anchor-sections-1.1.0/anchor-sections-hash.css" rel="stylesheet" />
+<script src="libs/anchor-sections-1.1.0/anchor-sections.js"></script>
+<script src="libs/kePrint-0.0.1/kePrint.js"></script>
+<link href="libs/lightable-0.0.1/lightable.css" rel="stylesheet" />
+<meta name="description" content="EDA de indicadores de salud y factores asociados a enfermedades cardíacas — BRFSS 2015">
+<meta name="keywords" content="R, bookdown, EDA, enfermedades cardiacas, BRFSS, XGBoost, salud">
+<meta property="og:title" content="EDA Enfermedades Cardíacas BRFSS 2015">
+<meta property="og:description" content="Análisis exploratorio de indicadores de salud y modelado predictivo con XGBoost">
+
+
+<style type="text/css">
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+<style type="text/css">
+  
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+</style>
+
+<link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i>Prefacio</a>
+<ul>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html#estructura-del-libro"><i class="fa fa-check"></i>Estructura del libro</a></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html#datos"><i class="fa fa-check"></i>Datos</a></li>
+</ul></li>
+<li class="chapter" data-level="1" data-path="introduccion.html"><a href="introduccion.html"><i class="fa fa-check"></i><b>1</b> Introducción</a>
+<ul>
+<li class="chapter" data-level="1.1" data-path="introduccion.html"><a href="introduccion.html#contexto"><i class="fa fa-check"></i><b>1.1</b> Contexto</a></li>
+<li class="chapter" data-level="1.2" data-path="introduccion.html"><a href="introduccion.html#objetivo-general"><i class="fa fa-check"></i><b>1.2</b> Objetivo general</a></li>
+<li class="chapter" data-level="1.3" data-path="introduccion.html"><a href="introduccion.html#objetivos-espec%C3%ADficos"><i class="fa fa-check"></i><b>1.3</b> Objetivos específicos</a></li>
+<li class="chapter" data-level="1.4" data-path="introduccion.html"><a href="introduccion.html#marco-te%C3%B3rico"><i class="fa fa-check"></i><b>1.4</b> Marco teórico</a>
+<ul>
+<li class="chapter" data-level="1.4.1" data-path="introduccion.html"><a href="introduccion.html#enfermedades-card%C3%ADacas-e-insuficiencia-card%C3%ADaca"><i class="fa fa-check"></i><b>1.4.1</b> Enfermedades cardíacas e insuficiencia cardíaca</a></li>
+<li class="chapter" data-level="1.4.2" data-path="introduccion.html"><a href="introduccion.html#el-sistema-brfss-como-fuente-de-datos"><i class="fa fa-check"></i><b>1.4.2</b> El sistema BRFSS como fuente de datos</a></li>
+<li class="chapter" data-level="1.4.3" data-path="introduccion.html"><a href="introduccion.html#m%C3%A9tricas-estad%C3%ADsticas-utilizadas"><i class="fa fa-check"></i><b>1.4.3</b> Métricas estadísticas utilizadas</a></li>
+<li class="chapter" data-level="1.4.4" data-path="introduccion.html"><a href="introduccion.html#algoritmos-de-clasificaci%C3%B3n"><i class="fa fa-check"></i><b>1.4.4</b> Algoritmos de clasificación</a></li>
+<li class="chapter" data-level="1.4.5" data-path="introduccion.html"><a href="introduccion.html#manejo-de-clases-desbalanceadas"><i class="fa fa-check"></i><b>1.4.5</b> Manejo de clases desbalanceadas</a></li>
+</ul></li>
+<li class="chapter" data-level="1.5" data-path="introduccion.html"><a href="introduccion.html#descripci%C3%B3n-del-dataset"><i class="fa fa-check"></i><b>1.5</b> Descripción del dataset</a></li>
+</ul></li>
+<li class="chapter" data-level="2" data-path="limpieza.html"><a href="limpieza.html"><i class="fa fa-check"></i><b>2</b> Limpieza y validación de datos</a>
+<ul>
+<li class="chapter" data-level="2.1" data-path="limpieza.html"><a href="limpieza.html#conversi%C3%B3n-de-tipos"><i class="fa fa-check"></i><b>2.1</b> Conversión de tipos</a></li>
+<li class="chapter" data-level="2.2" data-path="limpieza.html"><a href="limpieza.html#valores-nulos"><i class="fa fa-check"></i><b>2.2</b> Valores nulos</a></li>
+<li class="chapter" data-level="2.3" data-path="limpieza.html"><a href="limpieza.html#registros-duplicados"><i class="fa fa-check"></i><b>2.3</b> Registros duplicados</a></li>
+<li class="chapter" data-level="2.4" data-path="limpieza.html"><a href="limpieza.html#verificaci%C3%B3n-de-rangos"><i class="fa fa-check"></i><b>2.4</b> Verificación de rangos</a></li>
+<li class="chapter" data-level="2.5" data-path="limpieza.html"><a href="limpieza.html#an%C3%A1lisis-de-valores-at%C3%ADpicos"><i class="fa fa-check"></i><b>2.5</b> Análisis de valores atípicos</a></li>
+</ul></li>
+<li class="chapter" data-level="3" data-path="univariado.html"><a href="univariado.html"><i class="fa fa-check"></i><b>3</b> Análisis univariado</a>
+<ul>
+<li class="chapter" data-level="3.1" data-path="univariado.html"><a href="univariado.html#objetivo"><i class="fa fa-check"></i><b>3.1</b> Variable objetivo</a></li>
+<li class="chapter" data-level="3.2" data-path="univariado.html"><a href="univariado.html#binarias"><i class="fa fa-check"></i><b>3.2</b> Variables binarias</a></li>
+<li class="chapter" data-level="3.3" data-path="univariado.html"><a href="univariado.html#ordinales"><i class="fa fa-check"></i><b>3.3</b> Variables ordinales</a></li>
+<li class="chapter" data-level="3.4" data-path="univariado.html"><a href="univariado.html#continuas"><i class="fa fa-check"></i><b>3.4</b> Variables continuas</a>
+<ul>
+<li class="chapter" data-level="3.4.1" data-path="univariado.html"><a href="univariado.html#bmi"><i class="fa fa-check"></i><b>3.4.1</b> BMI</a></li>
+<li class="chapter" data-level="3.4.2" data-path="univariado.html"><a href="univariado.html#menthlth-y-physhlth"><i class="fa fa-check"></i><b>3.4.2</b> MentHlth y PhysHlth</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="4" data-path="bivariado.html"><a href="bivariado.html"><i class="fa fa-check"></i><b>4</b> Análisis bivariado</a>
+<ul>
+<li class="chapter" data-level="4.1" data-path="bivariado.html"><a href="bivariado.html#correlacion"><i class="fa fa-check"></i><b>4.1</b> Correlación global con la variable objetivo</a></li>
+<li class="chapter" data-level="4.2" data-path="bivariado.html"><a href="bivariado.html#bivar-binarias"><i class="fa fa-check"></i><b>4.2</b> Variables binarias</a></li>
+<li class="chapter" data-level="4.3" data-path="bivariado.html"><a href="bivariado.html#bivar-ordinales"><i class="fa fa-check"></i><b>4.3</b> Variables ordinales</a></li>
+<li class="chapter" data-level="4.4" data-path="bivariado.html"><a href="bivariado.html#bivar-continuas"><i class="fa fa-check"></i><b>4.4</b> Variables continuas</a></li>
+<li class="chapter" data-level="4.5" data-path="bivariado.html"><a href="bivariado.html#interacciones"><i class="fa fa-check"></i><b>4.5</b> Interacciones entre factores</a></li>
+<li class="chapter" data-level="4.6" data-path="bivariado.html"><a href="bivariado.html#ranking"><i class="fa fa-check"></i><b>4.6</b> Ranking de importancia bivariada</a></li>
+</ul></li>
+<li class="chapter" data-level="5" data-path="hallazgos.html"><a href="hallazgos.html"><i class="fa fa-check"></i><b>5</b> Hallazgos principales</a>
+<ul>
+<li class="chapter" data-level="5.1" data-path="hallazgos.html"><a href="hallazgos.html#factores-principales"><i class="fa fa-check"></i><b>5.1</b> Factores con mayor asociación</a>
+<ul>
+<li class="chapter" data-level="5.1.1" data-path="hallazgos.html"><a href="hallazgos.html#factores-cl%C3%ADnicos-y-funcionales-alta-magnitud"><i class="fa fa-check"></i><b>5.1.1</b> Factores clínicos y funcionales (alta magnitud)</a></li>
+<li class="chapter" data-level="5.1.2" data-path="hallazgos.html"><a href="hallazgos.html#factores-conductuales-magnitud-moderada"><i class="fa fa-check"></i><b>5.1.2</b> Factores conductuales (magnitud moderada)</a></li>
+<li class="chapter" data-level="5.1.3" data-path="hallazgos.html"><a href="hallazgos.html#determinantes-socioecon%C3%B3micos"><i class="fa fa-check"></i><b>5.1.3</b> Determinantes socioeconómicos</a></li>
+</ul></li>
+<li class="chapter" data-level="5.2" data-path="hallazgos.html"><a href="hallazgos.html#interacciones-hallazgos"><i class="fa fa-check"></i><b>5.2</b> Interacciones sinérgicas</a></li>
+<li class="chapter" data-level="5.3" data-path="hallazgos.html"><a href="hallazgos.html#variables-bajas"><i class="fa fa-check"></i><b>5.3</b> Variables con baja utilidad individual</a></li>
+<li class="chapter" data-level="5.4" data-path="hallazgos.html"><a href="hallazgos.html#consideraciones-modelado"><i class="fa fa-check"></i><b>5.4</b> Consideraciones para el modelado</a></li>
+</ul></li>
+<li class="chapter" data-level="6" data-path="modelado.html"><a href="modelado.html"><i class="fa fa-check"></i><b>6</b> Modelado predictivo</a>
+<ul>
+<li class="chapter" data-level="6.1" data-path="modelado.html"><a href="modelado.html#preparaci%C3%B3n-de-datos"><i class="fa fa-check"></i><b>6.1</b> Preparación de datos</a></li>
+<li class="chapter" data-level="6.2" data-path="modelado.html"><a href="modelado.html#entrenamiento-de-modelos"><i class="fa fa-check"></i><b>6.2</b> Entrenamiento de modelos</a>
+<ul>
+<li class="chapter" data-level="6.2.1" data-path="modelado.html"><a href="modelado.html#regresi%C3%B3n-log%C3%ADstica"><i class="fa fa-check"></i><b>6.2.1</b> Regresión Logística</a></li>
+<li class="chapter" data-level="6.2.2" data-path="modelado.html"><a href="modelado.html#random-forest"><i class="fa fa-check"></i><b>6.2.2</b> Random Forest</a></li>
+<li class="chapter" data-level="6.2.3" data-path="modelado.html"><a href="modelado.html#xgboost"><i class="fa fa-check"></i><b>6.2.3</b> XGBoost</a></li>
+</ul></li>
+<li class="chapter" data-level="6.3" data-path="modelado.html"><a href="modelado.html#tabla-comparativa"><i class="fa fa-check"></i><b>6.3</b> Tabla comparativa</a></li>
+<li class="chapter" data-level="6.4" data-path="modelado.html"><a href="modelado.html#curvas-roc-comparativas"><i class="fa fa-check"></i><b>6.4</b> Curvas ROC comparativas</a></li>
+<li class="chapter" data-level="6.5" data-path="modelado.html"><a href="modelado.html#threshold-tuning-xgboost"><i class="fa fa-check"></i><b>6.5</b> Threshold tuning — XGBoost</a></li>
+<li class="chapter" data-level="6.6" data-path="modelado.html"><a href="modelado.html#importancia-de-variables-xgboost"><i class="fa fa-check"></i><b>6.6</b> Importancia de variables — XGBoost</a></li>
+<li class="chapter" data-level="6.7" data-path="modelado.html"><a href="modelado.html#modelo-final-xgboost-con-12-variables"><i class="fa fa-check"></i><b>6.7</b> Modelo final: XGBoost con 12 variables</a></li>
+</ul></li>
+<li class="chapter" data-level="7" data-path="referencias.html"><a href="referencias.html"><i class="fa fa-check"></i><b>7</b> Referencias</a>
+<ul>
+<li class="chapter" data-level="7.1" data-path="referencias.html"><a href="referencias.html#bibliograf%C3%ADa"><i class="fa fa-check"></i><b>7.1</b> Bibliografía</a></li>
+<li class="chapter" data-level="7.2" data-path="referencias.html"><a href="referencias.html#paquetes-de-r-utilizados"><i class="fa fa-check"></i><b>7.2</b> Paquetes de R utilizados</a></li>
+</ul></li>
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Análisis Exploratorio de Indicadores de Salud y Factores Asociados a Enfermedades Cardíacas</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="referencias" class="section level1 hasAnchor" number="7">
+<h1><span class="header-section-number">Capítulo 7</span> Referencias<a href="referencias.html#referencias" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<div id="bibliografía" class="section level2 hasAnchor" number="7.1">
+<h2><span class="header-section-number">7.1</span> Bibliografía<a href="referencias.html#bibliograf%C3%ADa" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<ul>
+<li><p>Centers for Disease Control and Prevention. (2015). <em>Behavioral Risk Factor Surveillance System (BRFSS) 2015 Survey Data and Documentation</em>. U.S. Department of Health and Human Services. <a href="https://www.cdc.gov/brfss/annual_data/annual_2015.html" class="uri">https://www.cdc.gov/brfss/annual_data/annual_2015.html</a></p></li>
+<li><p>Teboul, A. (2021). <em>Heart Disease Health Indicators Dataset</em> [Dataset]. Kaggle. <a href="https://www.kaggle.com/datasets/alexteboul/heart-disease-health-indicators-dataset" class="uri">https://www.kaggle.com/datasets/alexteboul/heart-disease-health-indicators-dataset</a></p></li>
+<li><p>American Heart Association. (2023). <em>Heart Disease and Stroke Statistics — 2023 Update</em>. Circulation, 147(8), e93–e621. <a href="https://doi.org/10.1161/CIR.0000000000001123" class="uri">https://doi.org/10.1161/CIR.0000000000001123</a></p></li>
+<li><p>Chen, T., &amp; Guestrin, C. (2016). XGBoost: A Scalable Tree Boosting System. <em>Proceedings of the 22nd ACM SIGKDD International Conference on Knowledge Discovery and Data Mining</em>, 785–794. <a href="https://doi.org/10.1145/2939672.2939785" class="uri">https://doi.org/10.1145/2939672.2939785</a></p></li>
+<li><p>Breiman, L. (2001). Random Forests. <em>Machine Learning</em>, 45(1), 5–32. <a href="https://doi.org/10.1023/A:1010933404324" class="uri">https://doi.org/10.1023/A:1010933404324</a></p></li>
+<li><p>Cramér, H. (1946). <em>Mathematical Methods of Statistics</em>. Princeton University Press.</p></li>
+<li><p>Wickham, H. (2016). <em>ggplot2: Elegant Graphics for Data Analysis</em>. Springer-Verlag New York. <a href="https://ggplot2.tidyverse.org" class="uri">https://ggplot2.tidyverse.org</a></p></li>
+<li><p>Xie, Y. (2016). <em>bookdown: Authoring Books and Technical Documents with R Markdown</em>. Chapman and Hall/CRC. <a href="https://bookdown.org/yihui/bookdown/" class="uri">https://bookdown.org/yihui/bookdown/</a></p></li>
+</ul>
+</div>
+<div id="paquetes-de-r-utilizados" class="section level2 hasAnchor" number="7.2">
+<h2><span class="header-section-number">7.2</span> Paquetes de R utilizados<a href="referencias.html#paquetes-de-r-utilizados" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<div class="sourceCode" id="cb45"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb45-1"><a href="referencias.html#cb45-1" tabindex="-1"></a><span class="fu">sessionInfo</span>()</span></code></pre></div>
+<pre><code>## R version 4.5.2 (2025-10-31 ucrt)
+## Platform: x86_64-w64-mingw32/x64
+## Running under: Windows 11 x64 (build 22631)
+## 
+## Matrix products: default
+##   LAPACK version 3.12.1
+## 
+## locale:
+## [1] LC_COLLATE=Spanish_Colombia.utf8 
+## [2] LC_CTYPE=Spanish_Colombia.utf8   
+## [3] LC_MONETARY=Spanish_Colombia.utf8
+## [4] LC_NUMERIC=C                     
+## [5] LC_TIME=Spanish_Colombia.utf8    
+## 
+## time zone: America/Bogota
+## tzcode source: internal
+## 
+## attached base packages:
+## [1] stats     graphics  grDevices utils     datasets 
+## [6] methods   base     
+## 
+## other attached packages:
+##  [1] kableExtra_1.4.0     knitr_1.51          
+##  [3] gridExtra_2.3        randomForest_4.7-1.2
+##  [5] MLmetrics_1.1.3      pROC_1.19.0.1       
+##  [7] xgboost_3.2.1.1      caret_7.0-1         
+##  [9] lattice_0.22-7       corrplot_0.95       
+## [11] scales_1.4.0         lubridate_1.9.5     
+## [13] forcats_1.0.1        stringr_1.6.0       
+## [15] dplyr_1.2.0          purrr_1.2.1         
+## [17] readr_2.2.0          tidyr_1.3.2         
+## [19] tibble_3.3.1         ggplot2_4.0.2       
+## [21] tidyverse_2.0.0     
+## 
+## loaded via a namespace (and not attached):
+##  [1] tidyselect_1.2.1     viridisLite_0.4.3   
+##  [3] timeDate_4052.112    farver_2.1.2        
+##  [5] S7_0.2.1             fastmap_1.2.0       
+##  [7] digest_0.6.39        rpart_4.1.24        
+##  [9] timechange_0.4.0     lifecycle_1.0.5     
+## [11] survival_3.8-3       magrittr_2.0.4      
+## [13] compiler_4.5.2       rlang_1.1.7         
+## [15] sass_0.4.10          tools_4.5.2         
+## [17] yaml_2.3.12          data.table_1.18.2.1 
+## [19] labeling_0.4.3       xml2_1.5.2          
+## [21] plyr_1.8.9           RColorBrewer_1.1-3  
+## [23] rsconnect_1.7.0      withr_3.0.2         
+## [25] nnet_7.3-20          grid_4.5.2          
+## [27] stats4_4.5.2         future_1.70.0       
+## [29] globals_0.19.1       iterators_1.0.14    
+## [31] MASS_7.3-65          cli_3.6.5           
+## [33] rmarkdown_2.30       generics_0.1.4      
+## [35] otel_0.2.0           rstudioapi_0.18.0   
+## [37] future.apply_1.20.2  tzdb_0.5.0          
+## [39] reshape2_1.4.5       cachem_1.1.0        
+## [41] splines_4.5.2        parallel_4.5.2      
+## [43] vctrs_0.7.1          hardhat_1.4.3       
+## [45] Matrix_1.7-4         jsonlite_2.0.0      
+## [47] bookdown_0.46        hms_1.1.4           
+## [49] listenv_0.10.1       systemfonts_1.3.1   
+## [51] foreach_1.5.2        gower_1.0.2         
+## [53] jquerylib_0.1.4      recipes_1.3.2       
+## [55] glue_1.8.0           parallelly_1.47.0   
+## [57] codetools_0.2-20     stringi_1.8.7       
+## [59] gtable_0.3.6         pillar_1.11.1       
+## [61] htmltools_0.5.9      ipred_0.9-15        
+## [63] lava_1.9.0           R6_2.6.1            
+## [65] textshaping_1.0.4    evaluate_1.0.5      
+## [67] bslib_0.10.0         class_7.3-23        
+## [69] Rcpp_1.1.1           svglite_2.2.2       
+## [71] nlme_3.1-168         prodlim_2026.03.11  
+## [73] xfun_0.56            pkgconfig_2.0.3     
+## [75] ModelMetrics_1.2.2.2</code></pre>
+
+</div>
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="modelado.html" class="navigation navigation-prev navigation-unique" aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+  "sharing": {
+    "github": true,
+    "facebook": true,
+    "twitter": true,
+    "linkedin": false,
+    "weibo": false,
+    "instapaper": false,
+    "vk": false,
+    "whatsapp": false,
+    "all": ["facebook", "twitter", "linkedin", "weibo", "instapaper"]
+  },
+  "fontsettings": {
+    "theme": "white",
+    "family": "sans",
+    "size": 2
+  },
+  "edit": {
+    "link": null,
+    "text": null
+  },
+  "history": {
+    "link": null,
+    "text": null
+  },
+  "view": {
+    "link": null,
+    "text": null
+  },
+  "download": ["eda-cardiaco.pdf"],
+  "search": {
+    "engine": "fuse",
+    "options": null
+  },
+  "toc": {
+    "collapse": "subsection",
+    "scroll_highlight": true
+  },
+  "toolbar": {
+    "position": "fixed"
+  }
+});
+});
+</script>
+
+</body>
+
+</html>

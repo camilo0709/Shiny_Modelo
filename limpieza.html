@@ -1,0 +1,1097 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>Capítulo 2 Limpieza y validación de datos | Análisis Exploratorio de Indicadores de Salud y Factores Asociados a Enfermedades Cardíacas</title>
+  <meta name="description" content="EDA sobre los factores de riesgo cardiovascular en el dataset BRFSS 2015, incluyendo análisis univariado, bivariado y modelado predictivo con XGBoost." />
+  <meta name="generator" content="bookdown 0.46 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="Capítulo 2 Limpieza y validación de datos | Análisis Exploratorio de Indicadores de Salud y Factores Asociados a Enfermedades Cardíacas" />
+  <meta property="og:type" content="book" />
+  
+  <meta property="og:description" content="EDA sobre los factores de riesgo cardiovascular en el dataset BRFSS 2015, incluyendo análisis univariado, bivariado y modelado predictivo con XGBoost." />
+  
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Capítulo 2 Limpieza y validación de datos | Análisis Exploratorio de Indicadores de Salud y Factores Asociados a Enfermedades Cardíacas" />
+  
+  <meta name="twitter:description" content="EDA sobre los factores de riesgo cardiovascular en el dataset BRFSS 2015, incluyendo análisis univariado, bivariado y modelado predictivo con XGBoost." />
+  
+
+<meta name="author" content="Alavarado Natalia y Mujica Camilo" />
+
+
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  
+<link rel="prev" href="introduccion.html"/>
+<link rel="next" href="univariado.html"/>
+<script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+<link href="libs/anchor-sections-1.1.0/anchor-sections.css" rel="stylesheet" />
+<link href="libs/anchor-sections-1.1.0/anchor-sections-hash.css" rel="stylesheet" />
+<script src="libs/anchor-sections-1.1.0/anchor-sections.js"></script>
+<script src="libs/kePrint-0.0.1/kePrint.js"></script>
+<link href="libs/lightable-0.0.1/lightable.css" rel="stylesheet" />
+<meta name="description" content="EDA de indicadores de salud y factores asociados a enfermedades cardíacas — BRFSS 2015">
+<meta name="keywords" content="R, bookdown, EDA, enfermedades cardiacas, BRFSS, XGBoost, salud">
+<meta property="og:title" content="EDA Enfermedades Cardíacas BRFSS 2015">
+<meta property="og:description" content="Análisis exploratorio de indicadores de salud y modelado predictivo con XGBoost">
+
+
+<style type="text/css">
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+<style type="text/css">
+  
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+</style>
+
+<link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i>Prefacio</a>
+<ul>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html#estructura-del-libro"><i class="fa fa-check"></i>Estructura del libro</a></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html#datos"><i class="fa fa-check"></i>Datos</a></li>
+</ul></li>
+<li class="chapter" data-level="1" data-path="introduccion.html"><a href="introduccion.html"><i class="fa fa-check"></i><b>1</b> Introducción</a>
+<ul>
+<li class="chapter" data-level="1.1" data-path="introduccion.html"><a href="introduccion.html#contexto"><i class="fa fa-check"></i><b>1.1</b> Contexto</a></li>
+<li class="chapter" data-level="1.2" data-path="introduccion.html"><a href="introduccion.html#objetivo-general"><i class="fa fa-check"></i><b>1.2</b> Objetivo general</a></li>
+<li class="chapter" data-level="1.3" data-path="introduccion.html"><a href="introduccion.html#objetivos-espec%C3%ADficos"><i class="fa fa-check"></i><b>1.3</b> Objetivos específicos</a></li>
+<li class="chapter" data-level="1.4" data-path="introduccion.html"><a href="introduccion.html#marco-te%C3%B3rico"><i class="fa fa-check"></i><b>1.4</b> Marco teórico</a>
+<ul>
+<li class="chapter" data-level="1.4.1" data-path="introduccion.html"><a href="introduccion.html#enfermedades-card%C3%ADacas-e-insuficiencia-card%C3%ADaca"><i class="fa fa-check"></i><b>1.4.1</b> Enfermedades cardíacas e insuficiencia cardíaca</a></li>
+<li class="chapter" data-level="1.4.2" data-path="introduccion.html"><a href="introduccion.html#el-sistema-brfss-como-fuente-de-datos"><i class="fa fa-check"></i><b>1.4.2</b> El sistema BRFSS como fuente de datos</a></li>
+<li class="chapter" data-level="1.4.3" data-path="introduccion.html"><a href="introduccion.html#m%C3%A9tricas-estad%C3%ADsticas-utilizadas"><i class="fa fa-check"></i><b>1.4.3</b> Métricas estadísticas utilizadas</a></li>
+<li class="chapter" data-level="1.4.4" data-path="introduccion.html"><a href="introduccion.html#algoritmos-de-clasificaci%C3%B3n"><i class="fa fa-check"></i><b>1.4.4</b> Algoritmos de clasificación</a></li>
+<li class="chapter" data-level="1.4.5" data-path="introduccion.html"><a href="introduccion.html#manejo-de-clases-desbalanceadas"><i class="fa fa-check"></i><b>1.4.5</b> Manejo de clases desbalanceadas</a></li>
+</ul></li>
+<li class="chapter" data-level="1.5" data-path="introduccion.html"><a href="introduccion.html#descripci%C3%B3n-del-dataset"><i class="fa fa-check"></i><b>1.5</b> Descripción del dataset</a></li>
+</ul></li>
+<li class="chapter" data-level="2" data-path="limpieza.html"><a href="limpieza.html"><i class="fa fa-check"></i><b>2</b> Limpieza y validación de datos</a>
+<ul>
+<li class="chapter" data-level="2.1" data-path="limpieza.html"><a href="limpieza.html#conversi%C3%B3n-de-tipos"><i class="fa fa-check"></i><b>2.1</b> Conversión de tipos</a></li>
+<li class="chapter" data-level="2.2" data-path="limpieza.html"><a href="limpieza.html#valores-nulos"><i class="fa fa-check"></i><b>2.2</b> Valores nulos</a></li>
+<li class="chapter" data-level="2.3" data-path="limpieza.html"><a href="limpieza.html#registros-duplicados"><i class="fa fa-check"></i><b>2.3</b> Registros duplicados</a></li>
+<li class="chapter" data-level="2.4" data-path="limpieza.html"><a href="limpieza.html#verificaci%C3%B3n-de-rangos"><i class="fa fa-check"></i><b>2.4</b> Verificación de rangos</a></li>
+<li class="chapter" data-level="2.5" data-path="limpieza.html"><a href="limpieza.html#an%C3%A1lisis-de-valores-at%C3%ADpicos"><i class="fa fa-check"></i><b>2.5</b> Análisis de valores atípicos</a></li>
+</ul></li>
+<li class="chapter" data-level="3" data-path="univariado.html"><a href="univariado.html"><i class="fa fa-check"></i><b>3</b> Análisis univariado</a>
+<ul>
+<li class="chapter" data-level="3.1" data-path="univariado.html"><a href="univariado.html#objetivo"><i class="fa fa-check"></i><b>3.1</b> Variable objetivo</a></li>
+<li class="chapter" data-level="3.2" data-path="univariado.html"><a href="univariado.html#binarias"><i class="fa fa-check"></i><b>3.2</b> Variables binarias</a></li>
+<li class="chapter" data-level="3.3" data-path="univariado.html"><a href="univariado.html#ordinales"><i class="fa fa-check"></i><b>3.3</b> Variables ordinales</a></li>
+<li class="chapter" data-level="3.4" data-path="univariado.html"><a href="univariado.html#continuas"><i class="fa fa-check"></i><b>3.4</b> Variables continuas</a>
+<ul>
+<li class="chapter" data-level="3.4.1" data-path="univariado.html"><a href="univariado.html#bmi"><i class="fa fa-check"></i><b>3.4.1</b> BMI</a></li>
+<li class="chapter" data-level="3.4.2" data-path="univariado.html"><a href="univariado.html#menthlth-y-physhlth"><i class="fa fa-check"></i><b>3.4.2</b> MentHlth y PhysHlth</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="4" data-path="bivariado.html"><a href="bivariado.html"><i class="fa fa-check"></i><b>4</b> Análisis bivariado</a>
+<ul>
+<li class="chapter" data-level="4.1" data-path="bivariado.html"><a href="bivariado.html#correlacion"><i class="fa fa-check"></i><b>4.1</b> Correlación global con la variable objetivo</a></li>
+<li class="chapter" data-level="4.2" data-path="bivariado.html"><a href="bivariado.html#bivar-binarias"><i class="fa fa-check"></i><b>4.2</b> Variables binarias</a></li>
+<li class="chapter" data-level="4.3" data-path="bivariado.html"><a href="bivariado.html#bivar-ordinales"><i class="fa fa-check"></i><b>4.3</b> Variables ordinales</a></li>
+<li class="chapter" data-level="4.4" data-path="bivariado.html"><a href="bivariado.html#bivar-continuas"><i class="fa fa-check"></i><b>4.4</b> Variables continuas</a></li>
+<li class="chapter" data-level="4.5" data-path="bivariado.html"><a href="bivariado.html#interacciones"><i class="fa fa-check"></i><b>4.5</b> Interacciones entre factores</a></li>
+<li class="chapter" data-level="4.6" data-path="bivariado.html"><a href="bivariado.html#ranking"><i class="fa fa-check"></i><b>4.6</b> Ranking de importancia bivariada</a></li>
+</ul></li>
+<li class="chapter" data-level="5" data-path="hallazgos.html"><a href="hallazgos.html"><i class="fa fa-check"></i><b>5</b> Hallazgos principales</a>
+<ul>
+<li class="chapter" data-level="5.1" data-path="hallazgos.html"><a href="hallazgos.html#factores-principales"><i class="fa fa-check"></i><b>5.1</b> Factores con mayor asociación</a>
+<ul>
+<li class="chapter" data-level="5.1.1" data-path="hallazgos.html"><a href="hallazgos.html#factores-cl%C3%ADnicos-y-funcionales-alta-magnitud"><i class="fa fa-check"></i><b>5.1.1</b> Factores clínicos y funcionales (alta magnitud)</a></li>
+<li class="chapter" data-level="5.1.2" data-path="hallazgos.html"><a href="hallazgos.html#factores-conductuales-magnitud-moderada"><i class="fa fa-check"></i><b>5.1.2</b> Factores conductuales (magnitud moderada)</a></li>
+<li class="chapter" data-level="5.1.3" data-path="hallazgos.html"><a href="hallazgos.html#determinantes-socioecon%C3%B3micos"><i class="fa fa-check"></i><b>5.1.3</b> Determinantes socioeconómicos</a></li>
+</ul></li>
+<li class="chapter" data-level="5.2" data-path="hallazgos.html"><a href="hallazgos.html#interacciones-hallazgos"><i class="fa fa-check"></i><b>5.2</b> Interacciones sinérgicas</a></li>
+<li class="chapter" data-level="5.3" data-path="hallazgos.html"><a href="hallazgos.html#variables-bajas"><i class="fa fa-check"></i><b>5.3</b> Variables con baja utilidad individual</a></li>
+<li class="chapter" data-level="5.4" data-path="hallazgos.html"><a href="hallazgos.html#consideraciones-modelado"><i class="fa fa-check"></i><b>5.4</b> Consideraciones para el modelado</a></li>
+</ul></li>
+<li class="chapter" data-level="6" data-path="modelado.html"><a href="modelado.html"><i class="fa fa-check"></i><b>6</b> Modelado predictivo</a>
+<ul>
+<li class="chapter" data-level="6.1" data-path="modelado.html"><a href="modelado.html#preparaci%C3%B3n-de-datos"><i class="fa fa-check"></i><b>6.1</b> Preparación de datos</a></li>
+<li class="chapter" data-level="6.2" data-path="modelado.html"><a href="modelado.html#entrenamiento-de-modelos"><i class="fa fa-check"></i><b>6.2</b> Entrenamiento de modelos</a>
+<ul>
+<li class="chapter" data-level="6.2.1" data-path="modelado.html"><a href="modelado.html#regresi%C3%B3n-log%C3%ADstica"><i class="fa fa-check"></i><b>6.2.1</b> Regresión Logística</a></li>
+<li class="chapter" data-level="6.2.2" data-path="modelado.html"><a href="modelado.html#random-forest"><i class="fa fa-check"></i><b>6.2.2</b> Random Forest</a></li>
+<li class="chapter" data-level="6.2.3" data-path="modelado.html"><a href="modelado.html#xgboost"><i class="fa fa-check"></i><b>6.2.3</b> XGBoost</a></li>
+</ul></li>
+<li class="chapter" data-level="6.3" data-path="modelado.html"><a href="modelado.html#tabla-comparativa"><i class="fa fa-check"></i><b>6.3</b> Tabla comparativa</a></li>
+<li class="chapter" data-level="6.4" data-path="modelado.html"><a href="modelado.html#curvas-roc-comparativas"><i class="fa fa-check"></i><b>6.4</b> Curvas ROC comparativas</a></li>
+<li class="chapter" data-level="6.5" data-path="modelado.html"><a href="modelado.html#threshold-tuning-xgboost"><i class="fa fa-check"></i><b>6.5</b> Threshold tuning — XGBoost</a></li>
+<li class="chapter" data-level="6.6" data-path="modelado.html"><a href="modelado.html#importancia-de-variables-xgboost"><i class="fa fa-check"></i><b>6.6</b> Importancia de variables — XGBoost</a></li>
+<li class="chapter" data-level="6.7" data-path="modelado.html"><a href="modelado.html#modelo-final-xgboost-con-12-variables"><i class="fa fa-check"></i><b>6.7</b> Modelo final: XGBoost con 12 variables</a></li>
+</ul></li>
+<li class="chapter" data-level="7" data-path="referencias.html"><a href="referencias.html"><i class="fa fa-check"></i><b>7</b> Referencias</a>
+<ul>
+<li class="chapter" data-level="7.1" data-path="referencias.html"><a href="referencias.html#bibliograf%C3%ADa"><i class="fa fa-check"></i><b>7.1</b> Bibliografía</a></li>
+<li class="chapter" data-level="7.2" data-path="referencias.html"><a href="referencias.html#paquetes-de-r-utilizados"><i class="fa fa-check"></i><b>7.2</b> Paquetes de R utilizados</a></li>
+</ul></li>
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Análisis Exploratorio de Indicadores de Salud y Factores Asociados a Enfermedades Cardíacas</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="limpieza" class="section level1 hasAnchor" number="2">
+<h1><span class="header-section-number">Capítulo 2</span> Limpieza y validación de datos<a href="limpieza.html#limpieza" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<p>Antes de iniciar el análisis exploratorio se verifica la integridad del dataset:
+ausencia de valores faltantes, duplicados y valores fuera del rango esperado para
+cada variable.</p>
+<div id="conversión-de-tipos" class="section level2 hasAnchor" number="2.1">
+<h2><span class="header-section-number">2.1</span> Conversión de tipos<a href="limpieza.html#conversi%C3%B3n-de-tipos" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="limpieza.html#cb4-1" tabindex="-1"></a>df_1 <span class="ot">&lt;-</span> df</span>
+<span id="cb4-2"><a href="limpieza.html#cb4-2" tabindex="-1"></a></span>
+<span id="cb4-3"><a href="limpieza.html#cb4-3" tabindex="-1"></a><span class="co"># Variable objetivo</span></span>
+<span id="cb4-4"><a href="limpieza.html#cb4-4" tabindex="-1"></a>df_1<span class="sc">$</span>HeartDiseaseorAttack <span class="ot">&lt;-</span> <span class="fu">factor</span>(</span>
+<span id="cb4-5"><a href="limpieza.html#cb4-5" tabindex="-1"></a>  df_1<span class="sc">$</span>HeartDiseaseorAttack,</span>
+<span id="cb4-6"><a href="limpieza.html#cb4-6" tabindex="-1"></a>  <span class="at">levels =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">1</span>),</span>
+<span id="cb4-7"><a href="limpieza.html#cb4-7" tabindex="-1"></a>  <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">&quot;Sin enfermedad cardíaca&quot;</span>, <span class="st">&quot;Con enfermedad cardíaca&quot;</span>)</span>
+<span id="cb4-8"><a href="limpieza.html#cb4-8" tabindex="-1"></a>)</span>
+<span id="cb4-9"><a href="limpieza.html#cb4-9" tabindex="-1"></a></span>
+<span id="cb4-10"><a href="limpieza.html#cb4-10" tabindex="-1"></a><span class="co"># Variables binarias</span></span>
+<span id="cb4-11"><a href="limpieza.html#cb4-11" tabindex="-1"></a>binary_labels <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
+<span id="cb4-12"><a href="limpieza.html#cb4-12" tabindex="-1"></a>  <span class="at">HighBP            =</span> <span class="fu">c</span>(<span class="st">&quot;Sin hipertensión&quot;</span>,          <span class="st">&quot;Con hipertensión&quot;</span>),</span>
+<span id="cb4-13"><a href="limpieza.html#cb4-13" tabindex="-1"></a>  <span class="at">HighChol          =</span> <span class="fu">c</span>(<span class="st">&quot;Sin colesterol alto&quot;</span>,        <span class="st">&quot;Con colesterol alto&quot;</span>),</span>
+<span id="cb4-14"><a href="limpieza.html#cb4-14" tabindex="-1"></a>  <span class="at">CholCheck         =</span> <span class="fu">c</span>(<span class="st">&quot;Sin chequeo en 5 años&quot;</span>,      <span class="st">&quot;Con chequeo en 5 años&quot;</span>),</span>
+<span id="cb4-15"><a href="limpieza.html#cb4-15" tabindex="-1"></a>  <span class="at">Smoker            =</span> <span class="fu">c</span>(<span class="st">&quot;No fumador&quot;</span>,                 <span class="st">&quot;Fumador&quot;</span>),</span>
+<span id="cb4-16"><a href="limpieza.html#cb4-16" tabindex="-1"></a>  <span class="at">Stroke            =</span> <span class="fu">c</span>(<span class="st">&quot;Sin ACV&quot;</span>,                    <span class="st">&quot;Con ACV&quot;</span>),</span>
+<span id="cb4-17"><a href="limpieza.html#cb4-17" tabindex="-1"></a>  <span class="at">PhysActivity      =</span> <span class="fu">c</span>(<span class="st">&quot;Sin actividad física&quot;</span>,       <span class="st">&quot;Con actividad física&quot;</span>),</span>
+<span id="cb4-18"><a href="limpieza.html#cb4-18" tabindex="-1"></a>  <span class="at">Fruits            =</span> <span class="fu">c</span>(<span class="st">&quot;No consume frutas diario&quot;</span>,   <span class="st">&quot;Consume frutas diario&quot;</span>),</span>
+<span id="cb4-19"><a href="limpieza.html#cb4-19" tabindex="-1"></a>  <span class="at">Veggies           =</span> <span class="fu">c</span>(<span class="st">&quot;No consume verduras diario&quot;</span>, <span class="st">&quot;Consume verduras diario&quot;</span>),</span>
+<span id="cb4-20"><a href="limpieza.html#cb4-20" tabindex="-1"></a>  <span class="at">HvyAlcoholConsump =</span> <span class="fu">c</span>(<span class="st">&quot;No consumo alto alcohol&quot;</span>,    <span class="st">&quot;Consumo alto alcohol&quot;</span>),</span>
+<span id="cb4-21"><a href="limpieza.html#cb4-21" tabindex="-1"></a>  <span class="at">AnyHealthcare     =</span> <span class="fu">c</span>(<span class="st">&quot;Sin cobertura médica&quot;</span>,       <span class="st">&quot;Con cobertura médica&quot;</span>),</span>
+<span id="cb4-22"><a href="limpieza.html#cb4-22" tabindex="-1"></a>  <span class="at">NoDocbcCost       =</span> <span class="fu">c</span>(<span class="st">&quot;Sin barrera económica&quot;</span>,      <span class="st">&quot;Con barrera económica&quot;</span>),</span>
+<span id="cb4-23"><a href="limpieza.html#cb4-23" tabindex="-1"></a>  <span class="at">DiffWalk          =</span> <span class="fu">c</span>(<span class="st">&quot;Sin dificultad al caminar&quot;</span>,  <span class="st">&quot;Con dificultad al caminar&quot;</span>),</span>
+<span id="cb4-24"><a href="limpieza.html#cb4-24" tabindex="-1"></a>  <span class="at">Sex               =</span> <span class="fu">c</span>(<span class="st">&quot;Mujer&quot;</span>,                      <span class="st">&quot;Hombre&quot;</span>)</span>
+<span id="cb4-25"><a href="limpieza.html#cb4-25" tabindex="-1"></a>)</span>
+<span id="cb4-26"><a href="limpieza.html#cb4-26" tabindex="-1"></a><span class="cf">for</span> (col <span class="cf">in</span> <span class="fu">names</span>(binary_labels)) {</span>
+<span id="cb4-27"><a href="limpieza.html#cb4-27" tabindex="-1"></a>  df_1[[col]] <span class="ot">&lt;-</span> <span class="fu">factor</span>(df_1[[col]], <span class="at">levels =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">1</span>), <span class="at">labels =</span> binary_labels[[col]])</span>
+<span id="cb4-28"><a href="limpieza.html#cb4-28" tabindex="-1"></a>}</span>
+<span id="cb4-29"><a href="limpieza.html#cb4-29" tabindex="-1"></a></span>
+<span id="cb4-30"><a href="limpieza.html#cb4-30" tabindex="-1"></a><span class="co"># Ordinales</span></span>
+<span id="cb4-31"><a href="limpieza.html#cb4-31" tabindex="-1"></a>df_1<span class="sc">$</span>Diabetes <span class="ot">&lt;-</span> <span class="fu">factor</span>(df_1<span class="sc">$</span>Diabetes, <span class="at">levels =</span> <span class="dv">0</span><span class="sc">:</span><span class="dv">2</span>, <span class="at">ordered =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb4-32"><a href="limpieza.html#cb4-32" tabindex="-1"></a>  <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">&quot;Sin diabetes&quot;</span>,<span class="st">&quot;Prediabetes&quot;</span>,<span class="st">&quot;Diabetes confirmada&quot;</span>))</span>
+<span id="cb4-33"><a href="limpieza.html#cb4-33" tabindex="-1"></a></span>
+<span id="cb4-34"><a href="limpieza.html#cb4-34" tabindex="-1"></a>df_1<span class="sc">$</span>GenHlth <span class="ot">&lt;-</span> <span class="fu">factor</span>(df_1<span class="sc">$</span>GenHlth, <span class="at">levels =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>, <span class="at">ordered =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb4-35"><a href="limpieza.html#cb4-35" tabindex="-1"></a>  <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">&quot;Excelente&quot;</span>,<span class="st">&quot;Muy buena&quot;</span>,<span class="st">&quot;Buena&quot;</span>,<span class="st">&quot;Regular&quot;</span>,<span class="st">&quot;Mala&quot;</span>))</span>
+<span id="cb4-36"><a href="limpieza.html#cb4-36" tabindex="-1"></a></span>
+<span id="cb4-37"><a href="limpieza.html#cb4-37" tabindex="-1"></a>age_labels <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;18–24&quot;</span>,<span class="st">&quot;25–29&quot;</span>,<span class="st">&quot;30–34&quot;</span>,<span class="st">&quot;35–39&quot;</span>,<span class="st">&quot;40–44&quot;</span>,<span class="st">&quot;45–49&quot;</span>,</span>
+<span id="cb4-38"><a href="limpieza.html#cb4-38" tabindex="-1"></a>                <span class="st">&quot;50–54&quot;</span>,<span class="st">&quot;55–59&quot;</span>,<span class="st">&quot;60–64&quot;</span>,<span class="st">&quot;65–69&quot;</span>,<span class="st">&quot;70–74&quot;</span>,<span class="st">&quot;75–79&quot;</span>,<span class="st">&quot;80+&quot;</span>)</span>
+<span id="cb4-39"><a href="limpieza.html#cb4-39" tabindex="-1"></a>df_1<span class="sc">$</span>Age <span class="ot">&lt;-</span> <span class="fu">factor</span>(df_1<span class="sc">$</span>Age, <span class="at">levels =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">13</span>, <span class="at">labels =</span> age_labels, <span class="at">ordered =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb4-40"><a href="limpieza.html#cb4-40" tabindex="-1"></a></span>
+<span id="cb4-41"><a href="limpieza.html#cb4-41" tabindex="-1"></a>edu_labels <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;Nunca asistió&quot;</span>,<span class="st">&quot;Primaria incompleta&quot;</span>,<span class="st">&quot;Secundaria incompleta&quot;</span>,</span>
+<span id="cb4-42"><a href="limpieza.html#cb4-42" tabindex="-1"></a>                <span class="st">&quot;Secundaria completa&quot;</span>,<span class="st">&quot;Universidad incompleta&quot;</span>,<span class="st">&quot;Universidad completa&quot;</span>)</span>
+<span id="cb4-43"><a href="limpieza.html#cb4-43" tabindex="-1"></a>df_1<span class="sc">$</span>Education <span class="ot">&lt;-</span> <span class="fu">factor</span>(df_1<span class="sc">$</span>Education, <span class="at">levels =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">6</span>, <span class="at">labels =</span> edu_labels, <span class="at">ordered =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb4-44"><a href="limpieza.html#cb4-44" tabindex="-1"></a></span>
+<span id="cb4-45"><a href="limpieza.html#cb4-45" tabindex="-1"></a>inc_labels <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;&lt; $10,000&quot;</span>,<span class="st">&quot;$10,000–15,000&quot;</span>,<span class="st">&quot;$15,000–20,000&quot;</span>,<span class="st">&quot;$20,000–25,000&quot;</span>,</span>
+<span id="cb4-46"><a href="limpieza.html#cb4-46" tabindex="-1"></a>                <span class="st">&quot;$25,000–35,000&quot;</span>,<span class="st">&quot;$35,000–50,000&quot;</span>,<span class="st">&quot;$50,000–75,000&quot;</span>,<span class="st">&quot;$75,000+&quot;</span>)</span>
+<span id="cb4-47"><a href="limpieza.html#cb4-47" tabindex="-1"></a>df_1<span class="sc">$</span>Income <span class="ot">&lt;-</span> <span class="fu">factor</span>(df_1<span class="sc">$</span>Income, <span class="at">levels =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">8</span>, <span class="at">labels =</span> inc_labels, <span class="at">ordered =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
+</div>
+<div id="valores-nulos" class="section level2 hasAnchor" number="2.2">
+<h2><span class="header-section-number">2.2</span> Valores nulos<a href="limpieza.html#valores-nulos" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="limpieza.html#cb5-1" tabindex="-1"></a>nulos <span class="ot">&lt;-</span> <span class="fu">colSums</span>(<span class="fu">is.na</span>(df))</span>
+<span id="cb5-2"><a href="limpieza.html#cb5-2" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;Total de valores nulos:&quot;</span>, <span class="fu">sum</span>(nulos), <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>)</span></code></pre></div>
+<pre><code>## Total de valores nulos: 0</code></pre>
+<p>No se detectaron valores nulos en ninguna de las 22 variables, resultado consistente
+con el proceso de limpieza previo aplicado sobre el BRFSS 2015.</p>
+</div>
+<div id="registros-duplicados" class="section level2 hasAnchor" number="2.3">
+<h2><span class="header-section-number">2.3</span> Registros duplicados<a href="limpieza.html#registros-duplicados" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="limpieza.html#cb7-1" tabindex="-1"></a>total      <span class="ot">&lt;-</span> <span class="fu">nrow</span>(df)</span>
+<span id="cb7-2"><a href="limpieza.html#cb7-2" tabindex="-1"></a>duplicados <span class="ot">&lt;-</span> <span class="fu">sum</span>(<span class="fu">duplicated</span>(df))</span>
+<span id="cb7-3"><a href="limpieza.html#cb7-3" tabindex="-1"></a>porcentaje <span class="ot">&lt;-</span> <span class="fu">round</span>(duplicados <span class="sc">/</span> total <span class="sc">*</span> <span class="dv">100</span>, <span class="dv">2</span>)</span>
+<span id="cb7-4"><a href="limpieza.html#cb7-4" tabindex="-1"></a></span>
+<span id="cb7-5"><a href="limpieza.html#cb7-5" tabindex="-1"></a><span class="fu">data.frame</span>(</span>
+<span id="cb7-6"><a href="limpieza.html#cb7-6" tabindex="-1"></a>  <span class="at">Metrica  =</span> <span class="fu">c</span>(<span class="st">&quot;Total de registros&quot;</span>, <span class="st">&quot;Registros duplicados&quot;</span>, <span class="st">&quot;Porcentaje&quot;</span>),</span>
+<span id="cb7-7"><a href="limpieza.html#cb7-7" tabindex="-1"></a>  <span class="at">Valor    =</span> <span class="fu">c</span>(<span class="fu">format</span>(total, <span class="at">big.mark=</span><span class="st">&quot;,&quot;</span>),</span>
+<span id="cb7-8"><a href="limpieza.html#cb7-8" tabindex="-1"></a>               <span class="fu">format</span>(duplicados, <span class="at">big.mark=</span><span class="st">&quot;,&quot;</span>),</span>
+<span id="cb7-9"><a href="limpieza.html#cb7-9" tabindex="-1"></a>               <span class="fu">paste0</span>(porcentaje, <span class="st">&quot;%&quot;</span>))</span>
+<span id="cb7-10"><a href="limpieza.html#cb7-10" tabindex="-1"></a>) <span class="sc">|&gt;</span></span>
+<span id="cb7-11"><a href="limpieza.html#cb7-11" tabindex="-1"></a>  <span class="fu">kable</span>(<span class="at">col.names =</span> <span class="fu">c</span>(<span class="st">&quot;Métrica&quot;</span>,<span class="st">&quot;Valor&quot;</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb7-12"><a href="limpieza.html#cb7-12" tabindex="-1"></a>  <span class="fu">kable_styling</span>(<span class="at">bootstrap_options =</span> <span class="st">&quot;striped&quot;</span>, <span class="at">full_width =</span> <span class="cn">FALSE</span>)</span></code></pre></div>
+<table class="table table-striped" style="color: black; width: auto !important; margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:left;">
+Métrica
+</th>
+<th style="text-align:left;">
+Valor
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+Total de registros
+</td>
+<td style="text-align:left;">
+253,680
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Registros duplicados
+</td>
+<td style="text-align:left;">
+23,899
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Porcentaje
+</td>
+<td style="text-align:left;">
+9.42%
+</td>
+</tr>
+</tbody>
+</table>
+<p>Se identificaron <strong>23.899 registros duplicados (9.43%)</strong>. Se tomó la decisión de
+mantenerlos: al tratarse de una encuesta con mayoría de variables binarias, es
+estadísticamente esperable que múltiples individuos compartan exactamente el mismo
+perfil de respuestas sin que esto represente un error de captura.</p>
+</div>
+<div id="verificación-de-rangos" class="section level2 hasAnchor" number="2.4">
+<h2><span class="header-section-number">2.4</span> Verificación de rangos<a href="limpieza.html#verificaci%C3%B3n-de-rangos" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="limpieza.html#cb8-1" tabindex="-1"></a>rangos_esperados <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
+<span id="cb8-2"><a href="limpieza.html#cb8-2" tabindex="-1"></a>  <span class="at">HeartDiseaseorAttack =</span> <span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">1</span>), <span class="at">HighBP =</span> <span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">1</span>), <span class="at">HighChol =</span> <span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">1</span>),</span>
+<span id="cb8-3"><a href="limpieza.html#cb8-3" tabindex="-1"></a>  <span class="at">CholCheck =</span> <span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">1</span>), <span class="at">BMI =</span> <span class="fu">c</span>(<span class="dv">12</span>,<span class="dv">98</span>), <span class="at">Smoker =</span> <span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">1</span>), <span class="at">Stroke =</span> <span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">1</span>),</span>
+<span id="cb8-4"><a href="limpieza.html#cb8-4" tabindex="-1"></a>  <span class="at">Diabetes =</span> <span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">2</span>), <span class="at">PhysActivity =</span> <span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">1</span>), <span class="at">Fruits =</span> <span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">1</span>),</span>
+<span id="cb8-5"><a href="limpieza.html#cb8-5" tabindex="-1"></a>  <span class="at">Veggies =</span> <span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">1</span>), <span class="at">HvyAlcoholConsump =</span> <span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">1</span>), <span class="at">AnyHealthcare =</span> <span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">1</span>),</span>
+<span id="cb8-6"><a href="limpieza.html#cb8-6" tabindex="-1"></a>  <span class="at">NoDocbcCost =</span> <span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">1</span>), <span class="at">GenHlth =</span> <span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">5</span>), <span class="at">MentHlth =</span> <span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">30</span>),</span>
+<span id="cb8-7"><a href="limpieza.html#cb8-7" tabindex="-1"></a>  <span class="at">PhysHlth =</span> <span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">30</span>), <span class="at">DiffWalk =</span> <span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">1</span>), <span class="at">Sex =</span> <span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">1</span>),</span>
+<span id="cb8-8"><a href="limpieza.html#cb8-8" tabindex="-1"></a>  <span class="at">Age =</span> <span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">13</span>), <span class="at">Education =</span> <span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">6</span>), <span class="at">Income =</span> <span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">8</span>)</span>
+<span id="cb8-9"><a href="limpieza.html#cb8-9" tabindex="-1"></a>)</span>
+<span id="cb8-10"><a href="limpieza.html#cb8-10" tabindex="-1"></a></span>
+<span id="cb8-11"><a href="limpieza.html#cb8-11" tabindex="-1"></a>rangos_df <span class="ot">&lt;-</span> <span class="fu">do.call</span>(rbind, <span class="fu">lapply</span>(<span class="fu">names</span>(rangos_esperados), <span class="cf">function</span>(col) {</span>
+<span id="cb8-12"><a href="limpieza.html#cb8-12" tabindex="-1"></a>  <span class="fu">data.frame</span>(</span>
+<span id="cb8-13"><a href="limpieza.html#cb8-13" tabindex="-1"></a>    <span class="at">Variable    =</span> col,</span>
+<span id="cb8-14"><a href="limpieza.html#cb8-14" tabindex="-1"></a>    <span class="at">Min_esp     =</span> rangos_esperados[[col]][<span class="dv">1</span>],</span>
+<span id="cb8-15"><a href="limpieza.html#cb8-15" tabindex="-1"></a>    <span class="at">Max_esp     =</span> rangos_esperados[[col]][<span class="dv">2</span>],</span>
+<span id="cb8-16"><a href="limpieza.html#cb8-16" tabindex="-1"></a>    <span class="at">Min_real    =</span> <span class="fu">min</span>(df[[col]]),</span>
+<span id="cb8-17"><a href="limpieza.html#cb8-17" tabindex="-1"></a>    <span class="at">Max_real    =</span> <span class="fu">max</span>(df[[col]]),</span>
+<span id="cb8-18"><a href="limpieza.html#cb8-18" tabindex="-1"></a>    <span class="at">Estado      =</span> <span class="fu">ifelse</span>(<span class="fu">min</span>(df[[col]]) <span class="sc">&gt;=</span> rangos_esperados[[col]][<span class="dv">1</span>] <span class="sc">&amp;</span></span>
+<span id="cb8-19"><a href="limpieza.html#cb8-19" tabindex="-1"></a>                         <span class="fu">max</span>(df[[col]]) <span class="sc">&lt;=</span> rangos_esperados[[col]][<span class="dv">2</span>], <span class="st">&quot;✓ OK&quot;</span>, <span class="st">&quot;✗ Error&quot;</span>)</span>
+<span id="cb8-20"><a href="limpieza.html#cb8-20" tabindex="-1"></a>  )</span>
+<span id="cb8-21"><a href="limpieza.html#cb8-21" tabindex="-1"></a>}))</span>
+<span id="cb8-22"><a href="limpieza.html#cb8-22" tabindex="-1"></a></span>
+<span id="cb8-23"><a href="limpieza.html#cb8-23" tabindex="-1"></a><span class="fu">kable</span>(rangos_df, <span class="at">caption =</span> <span class="st">&quot;Verificación de rangos esperados por variable&quot;</span>) <span class="sc">|&gt;</span></span>
+<span id="cb8-24"><a href="limpieza.html#cb8-24" tabindex="-1"></a>  <span class="fu">kable_styling</span>(<span class="at">bootstrap_options =</span> <span class="fu">c</span>(<span class="st">&quot;striped&quot;</span>,<span class="st">&quot;condensed&quot;</span>),</span>
+<span id="cb8-25"><a href="limpieza.html#cb8-25" tabindex="-1"></a>                <span class="at">full_width =</span> <span class="cn">FALSE</span>, <span class="at">font_size =</span> <span class="dv">11</span>) <span class="sc">|&gt;</span></span>
+<span id="cb8-26"><a href="limpieza.html#cb8-26" tabindex="-1"></a>  <span class="fu">column_spec</span>(<span class="dv">6</span>, <span class="at">color =</span> <span class="st">&quot;white&quot;</span>,</span>
+<span id="cb8-27"><a href="limpieza.html#cb8-27" tabindex="-1"></a>              <span class="at">background =</span> <span class="fu">ifelse</span>(rangos_df<span class="sc">$</span>Estado <span class="sc">==</span> <span class="st">&quot;✓ OK&quot;</span>, <span class="st">&quot;#4A7C59&quot;</span>, <span class="st">&quot;#C0392B&quot;</span>))</span></code></pre></div>
+<table class="table table-striped table-condensed" style="font-size: 11px; color: black; width: auto !important; margin-left: auto; margin-right: auto;">
+<caption style="font-size: initial !important;">
+<span id="tab:rangos">Table 2.1: </span><span id="tab:rangos">Table 2.2: </span>Verificación de rangos esperados por variable
+</caption>
+<thead>
+<tr>
+<th style="text-align:left;">
+Variable
+</th>
+<th style="text-align:right;">
+Min_esp
+</th>
+<th style="text-align:right;">
+Max_esp
+</th>
+<th style="text-align:right;">
+Min_real
+</th>
+<th style="text-align:right;">
+Max_real
+</th>
+<th style="text-align:left;">
+Estado
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+HeartDiseaseorAttack
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:left;color: white !important;background-color: rgba(74, 124, 89, 255) !important;">
+✓ OK
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+HighBP
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:left;color: white !important;background-color: rgba(74, 124, 89, 255) !important;">
+✓ OK
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+HighChol
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:left;color: white !important;background-color: rgba(74, 124, 89, 255) !important;">
+✓ OK
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+CholCheck
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:left;color: white !important;background-color: rgba(74, 124, 89, 255) !important;">
+✓ OK
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+BMI
+</td>
+<td style="text-align:right;">
+12
+</td>
+<td style="text-align:right;">
+98
+</td>
+<td style="text-align:right;">
+12
+</td>
+<td style="text-align:right;">
+98
+</td>
+<td style="text-align:left;color: white !important;background-color: rgba(74, 124, 89, 255) !important;">
+✓ OK
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Smoker
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:left;color: white !important;background-color: rgba(74, 124, 89, 255) !important;">
+✓ OK
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Stroke
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:left;color: white !important;background-color: rgba(74, 124, 89, 255) !important;">
+✓ OK
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Diabetes
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:left;color: white !important;background-color: rgba(74, 124, 89, 255) !important;">
+✓ OK
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+PhysActivity
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:left;color: white !important;background-color: rgba(74, 124, 89, 255) !important;">
+✓ OK
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Fruits
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:left;color: white !important;background-color: rgba(74, 124, 89, 255) !important;">
+✓ OK
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Veggies
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:left;color: white !important;background-color: rgba(74, 124, 89, 255) !important;">
+✓ OK
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+HvyAlcoholConsump
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:left;color: white !important;background-color: rgba(74, 124, 89, 255) !important;">
+✓ OK
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+AnyHealthcare
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:left;color: white !important;background-color: rgba(74, 124, 89, 255) !important;">
+✓ OK
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+NoDocbcCost
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:left;color: white !important;background-color: rgba(74, 124, 89, 255) !important;">
+✓ OK
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+GenHlth
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+5
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+5
+</td>
+<td style="text-align:left;color: white !important;background-color: rgba(74, 124, 89, 255) !important;">
+✓ OK
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+MentHlth
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+30
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+30
+</td>
+<td style="text-align:left;color: white !important;background-color: rgba(74, 124, 89, 255) !important;">
+✓ OK
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+PhysHlth
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+30
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+30
+</td>
+<td style="text-align:left;color: white !important;background-color: rgba(74, 124, 89, 255) !important;">
+✓ OK
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+DiffWalk
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:left;color: white !important;background-color: rgba(74, 124, 89, 255) !important;">
+✓ OK
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Sex
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:left;color: white !important;background-color: rgba(74, 124, 89, 255) !important;">
+✓ OK
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Age
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+13
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+13
+</td>
+<td style="text-align:left;color: white !important;background-color: rgba(74, 124, 89, 255) !important;">
+✓ OK
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Education
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+6
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+6
+</td>
+<td style="text-align:left;color: white !important;background-color: rgba(74, 124, 89, 255) !important;">
+✓ OK
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Income
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+8
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+8
+</td>
+<td style="text-align:left;color: white !important;background-color: rgba(74, 124, 89, 255) !important;">
+✓ OK
+</td>
+</tr>
+</tbody>
+</table>
+<p>Las 22 variables se encuentran dentro de los rangos esperados.</p>
+</div>
+<div id="análisis-de-valores-atípicos" class="section level2 hasAnchor" number="2.5">
+<h2><span class="header-section-number">2.5</span> Análisis de valores atípicos<a href="limpieza.html#an%C3%A1lisis-de-valores-at%C3%ADpicos" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>El análisis de outliers aplica únicamente a las variables continuas <strong>BMI</strong>, <strong>MentHlth</strong>
+y <strong>PhysHlth</strong>, usando el criterio de Tukey (Q1 − 1.5·IQR / Q3 + 1.5·IQR).</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="limpieza.html#cb9-1" tabindex="-1"></a>resumen_outliers <span class="ot">&lt;-</span> <span class="fu">do.call</span>(rbind, <span class="fu">lapply</span>(continuous_vars, <span class="cf">function</span>(v) {</span>
+<span id="cb9-2"><a href="limpieza.html#cb9-2" tabindex="-1"></a>  q1    <span class="ot">&lt;-</span> <span class="fu">quantile</span>(df[[v]], <span class="fl">0.25</span>)</span>
+<span id="cb9-3"><a href="limpieza.html#cb9-3" tabindex="-1"></a>  q3    <span class="ot">&lt;-</span> <span class="fu">quantile</span>(df[[v]], <span class="fl">0.75</span>)</span>
+<span id="cb9-4"><a href="limpieza.html#cb9-4" tabindex="-1"></a>  iqr   <span class="ot">&lt;-</span> q3 <span class="sc">-</span> q1</span>
+<span id="cb9-5"><a href="limpieza.html#cb9-5" tabindex="-1"></a>  lo    <span class="ot">&lt;-</span> q1 <span class="sc">-</span> <span class="fl">1.5</span> <span class="sc">*</span> iqr</span>
+<span id="cb9-6"><a href="limpieza.html#cb9-6" tabindex="-1"></a>  hi    <span class="ot">&lt;-</span> q3 <span class="sc">+</span> <span class="fl">1.5</span> <span class="sc">*</span> iqr</span>
+<span id="cb9-7"><a href="limpieza.html#cb9-7" tabindex="-1"></a>  n_out <span class="ot">&lt;-</span> <span class="fu">sum</span>(df[[v]] <span class="sc">&lt;</span> lo <span class="sc">|</span> df[[v]] <span class="sc">&gt;</span> hi)</span>
+<span id="cb9-8"><a href="limpieza.html#cb9-8" tabindex="-1"></a>  <span class="fu">data.frame</span>(<span class="at">Variable =</span> v, <span class="at">Q1 =</span> q1, <span class="at">Q3 =</span> q3, <span class="at">IQR =</span> iqr,</span>
+<span id="cb9-9"><a href="limpieza.html#cb9-9" tabindex="-1"></a>             <span class="at">Lim_inf =</span> <span class="fu">round</span>(lo,<span class="dv">2</span>), <span class="at">Lim_sup =</span> <span class="fu">round</span>(hi,<span class="dv">2</span>),</span>
+<span id="cb9-10"><a href="limpieza.html#cb9-10" tabindex="-1"></a>             <span class="at">N_outliers =</span> n_out,</span>
+<span id="cb9-11"><a href="limpieza.html#cb9-11" tabindex="-1"></a>             <span class="at">Pct =</span> <span class="fu">paste0</span>(<span class="fu">round</span>(n_out<span class="sc">/</span><span class="fu">nrow</span>(df)<span class="sc">*</span><span class="dv">100</span>, <span class="dv">2</span>), <span class="st">&quot;%&quot;</span>))</span>
+<span id="cb9-12"><a href="limpieza.html#cb9-12" tabindex="-1"></a>}))</span>
+<span id="cb9-13"><a href="limpieza.html#cb9-13" tabindex="-1"></a></span>
+<span id="cb9-14"><a href="limpieza.html#cb9-14" tabindex="-1"></a><span class="fu">kable</span>(resumen_outliers,</span>
+<span id="cb9-15"><a href="limpieza.html#cb9-15" tabindex="-1"></a>      <span class="at">col.names =</span> <span class="fu">c</span>(<span class="st">&quot;Variable&quot;</span>,<span class="st">&quot;Q1&quot;</span>,<span class="st">&quot;Q3&quot;</span>,<span class="st">&quot;IQR&quot;</span>,<span class="st">&quot;Lím. inf.&quot;</span>,<span class="st">&quot;Lím. sup.&quot;</span>,<span class="st">&quot;N° outliers&quot;</span>,<span class="st">&quot;%&quot;</span>),</span>
+<span id="cb9-16"><a href="limpieza.html#cb9-16" tabindex="-1"></a>      <span class="at">caption =</span> <span class="st">&quot;Resumen de valores atípicos (criterio de Tukey)&quot;</span>) <span class="sc">|&gt;</span></span>
+<span id="cb9-17"><a href="limpieza.html#cb9-17" tabindex="-1"></a>  <span class="fu">kable_styling</span>(<span class="at">bootstrap_options =</span> <span class="fu">c</span>(<span class="st">&quot;striped&quot;</span>,<span class="st">&quot;hover&quot;</span>), <span class="at">full_width =</span> <span class="cn">FALSE</span>)</span></code></pre></div>
+<table class="table table-striped table-hover" style="color: black; width: auto !important; margin-left: auto; margin-right: auto;">
+<caption>
+<span id="tab:outliers-tabla">Table 2.3: </span><span id="tab:outliers-tabla">Table 2.4: </span>Resumen de valores atípicos (criterio de Tukey)
+</caption>
+<thead>
+<tr>
+<th style="text-align:left;">
+</th>
+<th style="text-align:left;">
+Variable
+</th>
+<th style="text-align:right;">
+Q1
+</th>
+<th style="text-align:right;">
+Q3
+</th>
+<th style="text-align:right;">
+IQR
+</th>
+<th style="text-align:right;">
+Lím. inf.
+</th>
+<th style="text-align:right;">
+Lím. sup.
+</th>
+<th style="text-align:right;">
+N° outliers
+</th>
+<th style="text-align:left;">
+%
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+25%
+</td>
+<td style="text-align:left;">
+BMI
+</td>
+<td style="text-align:right;">
+24
+</td>
+<td style="text-align:right;">
+31
+</td>
+<td style="text-align:right;">
+7
+</td>
+<td style="text-align:right;">
+13.5
+</td>
+<td style="text-align:right;">
+41.5
+</td>
+<td style="text-align:right;">
+9847
+</td>
+<td style="text-align:left;">
+3.88%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+25%1
+</td>
+<td style="text-align:left;">
+MentHlth
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+-3.0
+</td>
+<td style="text-align:right;">
+5.0
+</td>
+<td style="text-align:right;">
+36208
+</td>
+<td style="text-align:left;">
+14.27%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+25%2
+</td>
+<td style="text-align:left;">
+PhysHlth
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+-4.5
+</td>
+<td style="text-align:right;">
+7.5
+</td>
+<td style="text-align:right;">
+40949
+</td>
+<td style="text-align:left;">
+16.14%
+</td>
+</tr>
+</tbody>
+</table>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="limpieza.html#cb10-1" tabindex="-1"></a>df_long <span class="ot">&lt;-</span> df <span class="sc">|&gt;</span></span>
+<span id="cb10-2"><a href="limpieza.html#cb10-2" tabindex="-1"></a>  <span class="fu">select</span>(<span class="fu">all_of</span>(continuous_vars)) <span class="sc">|&gt;</span></span>
+<span id="cb10-3"><a href="limpieza.html#cb10-3" tabindex="-1"></a>  <span class="fu">pivot_longer</span>(<span class="fu">everything</span>(), <span class="at">names_to =</span> <span class="st">&quot;Variable&quot;</span>, <span class="at">values_to =</span> <span class="st">&quot;Valor&quot;</span>)</span>
+<span id="cb10-4"><a href="limpieza.html#cb10-4" tabindex="-1"></a></span>
+<span id="cb10-5"><a href="limpieza.html#cb10-5" tabindex="-1"></a><span class="fu">ggplot</span>(df_long, <span class="fu">aes</span>(<span class="at">x =</span> Variable, <span class="at">y =</span> Valor, <span class="at">fill =</span> Variable)) <span class="sc">+</span></span>
+<span id="cb10-6"><a href="limpieza.html#cb10-6" tabindex="-1"></a>  <span class="fu">geom_boxplot</span>(<span class="at">outlier.size =</span> <span class="fl">0.5</span>, <span class="at">outlier.alpha =</span> <span class="fl">0.15</span>) <span class="sc">+</span></span>
+<span id="cb10-7"><a href="limpieza.html#cb10-7" tabindex="-1"></a>  <span class="fu">scale_fill_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(riesgo_color, nude_palette[<span class="dv">2</span>], <span class="st">&quot;#4A7C59&quot;</span>)) <span class="sc">+</span></span>
+<span id="cb10-8"><a href="limpieza.html#cb10-8" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span>Variable, <span class="at">scales =</span> <span class="st">&quot;free&quot;</span>) <span class="sc">+</span></span>
+<span id="cb10-9"><a href="limpieza.html#cb10-9" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">&quot;Boxplots de variables continuas&quot;</span>, <span class="at">x =</span> <span class="cn">NULL</span>, <span class="at">y =</span> <span class="st">&quot;Valor&quot;</span>) <span class="sc">+</span></span>
+<span id="cb10-10"><a href="limpieza.html#cb10-10" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">&quot;none&quot;</span>,</span>
+<span id="cb10-11"><a href="limpieza.html#cb10-11" tabindex="-1"></a>        <span class="at">strip.text =</span> <span class="fu">element_text</span>(<span class="at">face =</span> <span class="st">&quot;bold&quot;</span>))</span></code></pre></div>
+<div class="figure" style="text-align: center"><span style="display:block;" id="fig:outliers-boxplots"></span>
+<img src="eda-cardiaco_files/figure-html/outliers-boxplots-1.png" alt="Distribución de variables continuas con outliers" width="864" />
+<p class="caption">
+Figure 2.1: Distribución de variables continuas con outliers
+</p>
+</div>
+<p><strong>Decisión:</strong> No se aplica ningún tratamiento. Los valores extremos corresponden a
+individuos reales con perfiles de salud severos; su exclusión introduciría sesgo de
+selección.</p>
+
+</div>
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="introduccion.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="univariado.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+  "sharing": {
+    "github": true,
+    "facebook": true,
+    "twitter": true,
+    "linkedin": false,
+    "weibo": false,
+    "instapaper": false,
+    "vk": false,
+    "whatsapp": false,
+    "all": ["facebook", "twitter", "linkedin", "weibo", "instapaper"]
+  },
+  "fontsettings": {
+    "theme": "white",
+    "family": "sans",
+    "size": 2
+  },
+  "edit": {
+    "link": null,
+    "text": null
+  },
+  "history": {
+    "link": null,
+    "text": null
+  },
+  "view": {
+    "link": null,
+    "text": null
+  },
+  "download": ["eda-cardiaco.pdf"],
+  "search": {
+    "engine": "fuse",
+    "options": null
+  },
+  "toc": {
+    "collapse": "subsection",
+    "scroll_highlight": true
+  },
+  "toolbar": {
+    "position": "fixed"
+  }
+});
+});
+</script>
+
+</body>
+
+</html>

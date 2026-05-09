@@ -1,0 +1,1107 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>Capítulo 4 Análisis bivariado | Análisis Exploratorio de Indicadores de Salud y Factores Asociados a Enfermedades Cardíacas</title>
+  <meta name="description" content="EDA sobre los factores de riesgo cardiovascular en el dataset BRFSS 2015, incluyendo análisis univariado, bivariado y modelado predictivo con XGBoost." />
+  <meta name="generator" content="bookdown 0.46 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="Capítulo 4 Análisis bivariado | Análisis Exploratorio de Indicadores de Salud y Factores Asociados a Enfermedades Cardíacas" />
+  <meta property="og:type" content="book" />
+  
+  <meta property="og:description" content="EDA sobre los factores de riesgo cardiovascular en el dataset BRFSS 2015, incluyendo análisis univariado, bivariado y modelado predictivo con XGBoost." />
+  
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Capítulo 4 Análisis bivariado | Análisis Exploratorio de Indicadores de Salud y Factores Asociados a Enfermedades Cardíacas" />
+  
+  <meta name="twitter:description" content="EDA sobre los factores de riesgo cardiovascular en el dataset BRFSS 2015, incluyendo análisis univariado, bivariado y modelado predictivo con XGBoost." />
+  
+
+<meta name="author" content="Alavarado Natalia y Mujica Camilo" />
+
+
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  
+<link rel="prev" href="univariado.html"/>
+<link rel="next" href="hallazgos.html"/>
+<script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+<link href="libs/anchor-sections-1.1.0/anchor-sections.css" rel="stylesheet" />
+<link href="libs/anchor-sections-1.1.0/anchor-sections-hash.css" rel="stylesheet" />
+<script src="libs/anchor-sections-1.1.0/anchor-sections.js"></script>
+<script src="libs/kePrint-0.0.1/kePrint.js"></script>
+<link href="libs/lightable-0.0.1/lightable.css" rel="stylesheet" />
+<meta name="description" content="EDA de indicadores de salud y factores asociados a enfermedades cardíacas — BRFSS 2015">
+<meta name="keywords" content="R, bookdown, EDA, enfermedades cardiacas, BRFSS, XGBoost, salud">
+<meta property="og:title" content="EDA Enfermedades Cardíacas BRFSS 2015">
+<meta property="og:description" content="Análisis exploratorio de indicadores de salud y modelado predictivo con XGBoost">
+
+
+<style type="text/css">
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+<style type="text/css">
+  
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+</style>
+
+<link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i>Prefacio</a>
+<ul>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html#estructura-del-libro"><i class="fa fa-check"></i>Estructura del libro</a></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html#datos"><i class="fa fa-check"></i>Datos</a></li>
+</ul></li>
+<li class="chapter" data-level="1" data-path="introduccion.html"><a href="introduccion.html"><i class="fa fa-check"></i><b>1</b> Introducción</a>
+<ul>
+<li class="chapter" data-level="1.1" data-path="introduccion.html"><a href="introduccion.html#contexto"><i class="fa fa-check"></i><b>1.1</b> Contexto</a></li>
+<li class="chapter" data-level="1.2" data-path="introduccion.html"><a href="introduccion.html#objetivo-general"><i class="fa fa-check"></i><b>1.2</b> Objetivo general</a></li>
+<li class="chapter" data-level="1.3" data-path="introduccion.html"><a href="introduccion.html#objetivos-espec%C3%ADficos"><i class="fa fa-check"></i><b>1.3</b> Objetivos específicos</a></li>
+<li class="chapter" data-level="1.4" data-path="introduccion.html"><a href="introduccion.html#marco-te%C3%B3rico"><i class="fa fa-check"></i><b>1.4</b> Marco teórico</a>
+<ul>
+<li class="chapter" data-level="1.4.1" data-path="introduccion.html"><a href="introduccion.html#enfermedades-card%C3%ADacas-e-insuficiencia-card%C3%ADaca"><i class="fa fa-check"></i><b>1.4.1</b> Enfermedades cardíacas e insuficiencia cardíaca</a></li>
+<li class="chapter" data-level="1.4.2" data-path="introduccion.html"><a href="introduccion.html#el-sistema-brfss-como-fuente-de-datos"><i class="fa fa-check"></i><b>1.4.2</b> El sistema BRFSS como fuente de datos</a></li>
+<li class="chapter" data-level="1.4.3" data-path="introduccion.html"><a href="introduccion.html#m%C3%A9tricas-estad%C3%ADsticas-utilizadas"><i class="fa fa-check"></i><b>1.4.3</b> Métricas estadísticas utilizadas</a></li>
+<li class="chapter" data-level="1.4.4" data-path="introduccion.html"><a href="introduccion.html#algoritmos-de-clasificaci%C3%B3n"><i class="fa fa-check"></i><b>1.4.4</b> Algoritmos de clasificación</a></li>
+<li class="chapter" data-level="1.4.5" data-path="introduccion.html"><a href="introduccion.html#manejo-de-clases-desbalanceadas"><i class="fa fa-check"></i><b>1.4.5</b> Manejo de clases desbalanceadas</a></li>
+</ul></li>
+<li class="chapter" data-level="1.5" data-path="introduccion.html"><a href="introduccion.html#descripci%C3%B3n-del-dataset"><i class="fa fa-check"></i><b>1.5</b> Descripción del dataset</a></li>
+</ul></li>
+<li class="chapter" data-level="2" data-path="limpieza.html"><a href="limpieza.html"><i class="fa fa-check"></i><b>2</b> Limpieza y validación de datos</a>
+<ul>
+<li class="chapter" data-level="2.1" data-path="limpieza.html"><a href="limpieza.html#conversi%C3%B3n-de-tipos"><i class="fa fa-check"></i><b>2.1</b> Conversión de tipos</a></li>
+<li class="chapter" data-level="2.2" data-path="limpieza.html"><a href="limpieza.html#valores-nulos"><i class="fa fa-check"></i><b>2.2</b> Valores nulos</a></li>
+<li class="chapter" data-level="2.3" data-path="limpieza.html"><a href="limpieza.html#registros-duplicados"><i class="fa fa-check"></i><b>2.3</b> Registros duplicados</a></li>
+<li class="chapter" data-level="2.4" data-path="limpieza.html"><a href="limpieza.html#verificaci%C3%B3n-de-rangos"><i class="fa fa-check"></i><b>2.4</b> Verificación de rangos</a></li>
+<li class="chapter" data-level="2.5" data-path="limpieza.html"><a href="limpieza.html#an%C3%A1lisis-de-valores-at%C3%ADpicos"><i class="fa fa-check"></i><b>2.5</b> Análisis de valores atípicos</a></li>
+</ul></li>
+<li class="chapter" data-level="3" data-path="univariado.html"><a href="univariado.html"><i class="fa fa-check"></i><b>3</b> Análisis univariado</a>
+<ul>
+<li class="chapter" data-level="3.1" data-path="univariado.html"><a href="univariado.html#objetivo"><i class="fa fa-check"></i><b>3.1</b> Variable objetivo</a></li>
+<li class="chapter" data-level="3.2" data-path="univariado.html"><a href="univariado.html#binarias"><i class="fa fa-check"></i><b>3.2</b> Variables binarias</a></li>
+<li class="chapter" data-level="3.3" data-path="univariado.html"><a href="univariado.html#ordinales"><i class="fa fa-check"></i><b>3.3</b> Variables ordinales</a></li>
+<li class="chapter" data-level="3.4" data-path="univariado.html"><a href="univariado.html#continuas"><i class="fa fa-check"></i><b>3.4</b> Variables continuas</a>
+<ul>
+<li class="chapter" data-level="3.4.1" data-path="univariado.html"><a href="univariado.html#bmi"><i class="fa fa-check"></i><b>3.4.1</b> BMI</a></li>
+<li class="chapter" data-level="3.4.2" data-path="univariado.html"><a href="univariado.html#menthlth-y-physhlth"><i class="fa fa-check"></i><b>3.4.2</b> MentHlth y PhysHlth</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="4" data-path="bivariado.html"><a href="bivariado.html"><i class="fa fa-check"></i><b>4</b> Análisis bivariado</a>
+<ul>
+<li class="chapter" data-level="4.1" data-path="bivariado.html"><a href="bivariado.html#correlacion"><i class="fa fa-check"></i><b>4.1</b> Correlación global con la variable objetivo</a></li>
+<li class="chapter" data-level="4.2" data-path="bivariado.html"><a href="bivariado.html#bivar-binarias"><i class="fa fa-check"></i><b>4.2</b> Variables binarias</a></li>
+<li class="chapter" data-level="4.3" data-path="bivariado.html"><a href="bivariado.html#bivar-ordinales"><i class="fa fa-check"></i><b>4.3</b> Variables ordinales</a></li>
+<li class="chapter" data-level="4.4" data-path="bivariado.html"><a href="bivariado.html#bivar-continuas"><i class="fa fa-check"></i><b>4.4</b> Variables continuas</a></li>
+<li class="chapter" data-level="4.5" data-path="bivariado.html"><a href="bivariado.html#interacciones"><i class="fa fa-check"></i><b>4.5</b> Interacciones entre factores</a></li>
+<li class="chapter" data-level="4.6" data-path="bivariado.html"><a href="bivariado.html#ranking"><i class="fa fa-check"></i><b>4.6</b> Ranking de importancia bivariada</a></li>
+</ul></li>
+<li class="chapter" data-level="5" data-path="hallazgos.html"><a href="hallazgos.html"><i class="fa fa-check"></i><b>5</b> Hallazgos principales</a>
+<ul>
+<li class="chapter" data-level="5.1" data-path="hallazgos.html"><a href="hallazgos.html#factores-principales"><i class="fa fa-check"></i><b>5.1</b> Factores con mayor asociación</a>
+<ul>
+<li class="chapter" data-level="5.1.1" data-path="hallazgos.html"><a href="hallazgos.html#factores-cl%C3%ADnicos-y-funcionales-alta-magnitud"><i class="fa fa-check"></i><b>5.1.1</b> Factores clínicos y funcionales (alta magnitud)</a></li>
+<li class="chapter" data-level="5.1.2" data-path="hallazgos.html"><a href="hallazgos.html#factores-conductuales-magnitud-moderada"><i class="fa fa-check"></i><b>5.1.2</b> Factores conductuales (magnitud moderada)</a></li>
+<li class="chapter" data-level="5.1.3" data-path="hallazgos.html"><a href="hallazgos.html#determinantes-socioecon%C3%B3micos"><i class="fa fa-check"></i><b>5.1.3</b> Determinantes socioeconómicos</a></li>
+</ul></li>
+<li class="chapter" data-level="5.2" data-path="hallazgos.html"><a href="hallazgos.html#interacciones-hallazgos"><i class="fa fa-check"></i><b>5.2</b> Interacciones sinérgicas</a></li>
+<li class="chapter" data-level="5.3" data-path="hallazgos.html"><a href="hallazgos.html#variables-bajas"><i class="fa fa-check"></i><b>5.3</b> Variables con baja utilidad individual</a></li>
+<li class="chapter" data-level="5.4" data-path="hallazgos.html"><a href="hallazgos.html#consideraciones-modelado"><i class="fa fa-check"></i><b>5.4</b> Consideraciones para el modelado</a></li>
+</ul></li>
+<li class="chapter" data-level="6" data-path="modelado.html"><a href="modelado.html"><i class="fa fa-check"></i><b>6</b> Modelado predictivo</a>
+<ul>
+<li class="chapter" data-level="6.1" data-path="modelado.html"><a href="modelado.html#preparaci%C3%B3n-de-datos"><i class="fa fa-check"></i><b>6.1</b> Preparación de datos</a></li>
+<li class="chapter" data-level="6.2" data-path="modelado.html"><a href="modelado.html#entrenamiento-de-modelos"><i class="fa fa-check"></i><b>6.2</b> Entrenamiento de modelos</a>
+<ul>
+<li class="chapter" data-level="6.2.1" data-path="modelado.html"><a href="modelado.html#regresi%C3%B3n-log%C3%ADstica"><i class="fa fa-check"></i><b>6.2.1</b> Regresión Logística</a></li>
+<li class="chapter" data-level="6.2.2" data-path="modelado.html"><a href="modelado.html#random-forest"><i class="fa fa-check"></i><b>6.2.2</b> Random Forest</a></li>
+<li class="chapter" data-level="6.2.3" data-path="modelado.html"><a href="modelado.html#xgboost"><i class="fa fa-check"></i><b>6.2.3</b> XGBoost</a></li>
+</ul></li>
+<li class="chapter" data-level="6.3" data-path="modelado.html"><a href="modelado.html#tabla-comparativa"><i class="fa fa-check"></i><b>6.3</b> Tabla comparativa</a></li>
+<li class="chapter" data-level="6.4" data-path="modelado.html"><a href="modelado.html#curvas-roc-comparativas"><i class="fa fa-check"></i><b>6.4</b> Curvas ROC comparativas</a></li>
+<li class="chapter" data-level="6.5" data-path="modelado.html"><a href="modelado.html#threshold-tuning-xgboost"><i class="fa fa-check"></i><b>6.5</b> Threshold tuning — XGBoost</a></li>
+<li class="chapter" data-level="6.6" data-path="modelado.html"><a href="modelado.html#importancia-de-variables-xgboost"><i class="fa fa-check"></i><b>6.6</b> Importancia de variables — XGBoost</a></li>
+<li class="chapter" data-level="6.7" data-path="modelado.html"><a href="modelado.html#modelo-final-xgboost-con-12-variables"><i class="fa fa-check"></i><b>6.7</b> Modelo final: XGBoost con 12 variables</a></li>
+</ul></li>
+<li class="chapter" data-level="7" data-path="referencias.html"><a href="referencias.html"><i class="fa fa-check"></i><b>7</b> Referencias</a>
+<ul>
+<li class="chapter" data-level="7.1" data-path="referencias.html"><a href="referencias.html#bibliograf%C3%ADa"><i class="fa fa-check"></i><b>7.1</b> Bibliografía</a></li>
+<li class="chapter" data-level="7.2" data-path="referencias.html"><a href="referencias.html#paquetes-de-r-utilizados"><i class="fa fa-check"></i><b>7.2</b> Paquetes de R utilizados</a></li>
+</ul></li>
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Análisis Exploratorio de Indicadores de Salud y Factores Asociados a Enfermedades Cardíacas</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="bivariado" class="section level1 hasAnchor" number="4">
+<h1><span class="header-section-number">Capítulo 4</span> Análisis bivariado<a href="bivariado.html#bivariado" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<p>Se examina la relación de cada variable predictora con <code>HeartDiseaseorAttack</code>:</p>
+<ul>
+<li><strong>Variables binarias y ordinales → Chi-cuadrado + V de Cramér</strong></li>
+<li><strong>Variables continuas → Mann-Whitney U + |r| de Pearson</strong></li>
+</ul>
+<div id="correlacion" class="section level2 hasAnchor" number="4.1">
+<h2><span class="header-section-number">4.1</span> Correlación global con la variable objetivo<a href="bivariado.html#correlacion" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="bivariado.html#cb17-1" tabindex="-1"></a>corr_vals <span class="ot">&lt;-</span> <span class="fu">cor</span>(df)[, <span class="st">&quot;HeartDiseaseorAttack&quot;</span>]</span>
+<span id="cb17-2"><a href="bivariado.html#cb17-2" tabindex="-1"></a>corr_vals <span class="ot">&lt;-</span> <span class="fu">sort</span>(corr_vals[<span class="fu">names</span>(corr_vals) <span class="sc">!=</span> <span class="st">&quot;HeartDiseaseorAttack&quot;</span>], <span class="at">decreasing =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb17-3"><a href="bivariado.html#cb17-3" tabindex="-1"></a></span>
+<span id="cb17-4"><a href="bivariado.html#cb17-4" tabindex="-1"></a>df_corr <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">Variable =</span> <span class="fu">names</span>(corr_vals), <span class="at">r =</span> <span class="fu">as.numeric</span>(corr_vals))</span>
+<span id="cb17-5"><a href="bivariado.html#cb17-5" tabindex="-1"></a></span>
+<span id="cb17-6"><a href="bivariado.html#cb17-6" tabindex="-1"></a><span class="fu">ggplot</span>(df_corr, <span class="fu">aes</span>(<span class="at">x =</span> r, <span class="at">y =</span> <span class="fu">reorder</span>(Variable, r), <span class="at">fill =</span> r <span class="sc">&gt;</span> <span class="dv">0</span>)) <span class="sc">+</span></span>
+<span id="cb17-7"><a href="bivariado.html#cb17-7" tabindex="-1"></a>  <span class="fu">geom_col</span>(<span class="at">color =</span> <span class="st">&quot;white&quot;</span>, <span class="at">width =</span> <span class="fl">0.65</span>) <span class="sc">+</span></span>
+<span id="cb17-8"><a href="bivariado.html#cb17-8" tabindex="-1"></a>  <span class="fu">scale_fill_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(bajo_color, riesgo_color)) <span class="sc">+</span></span>
+<span id="cb17-9"><a href="bivariado.html#cb17-9" tabindex="-1"></a>  <span class="fu">geom_text</span>(<span class="fu">aes</span>(<span class="at">label =</span> <span class="fu">round</span>(r, <span class="dv">3</span>),</span>
+<span id="cb17-10"><a href="bivariado.html#cb17-10" tabindex="-1"></a>                <span class="at">hjust =</span> <span class="fu">ifelse</span>(r <span class="sc">&gt;=</span> <span class="dv">0</span>, <span class="sc">-</span><span class="fl">0.1</span>, <span class="fl">1.1</span>)),</span>
+<span id="cb17-11"><a href="bivariado.html#cb17-11" tabindex="-1"></a>            <span class="at">size =</span> <span class="dv">3</span>, <span class="at">color =</span> <span class="st">&quot;#3a3a3a&quot;</span>) <span class="sc">+</span></span>
+<span id="cb17-12"><a href="bivariado.html#cb17-12" tabindex="-1"></a>  <span class="fu">geom_vline</span>(<span class="at">xintercept =</span> <span class="dv">0</span>, <span class="at">linetype =</span> <span class="st">&quot;dashed&quot;</span>, <span class="at">linewidth =</span> <span class="fl">0.6</span>) <span class="sc">+</span></span>
+<span id="cb17-13"><a href="bivariado.html#cb17-13" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">&quot;Correlación de Pearson con HeartDiseaseorAttack&quot;</span>,</span>
+<span id="cb17-14"><a href="bivariado.html#cb17-14" tabindex="-1"></a>       <span class="at">x =</span> <span class="st">&quot;Correlación&quot;</span>, <span class="at">y =</span> <span class="cn">NULL</span>) <span class="sc">+</span></span>
+<span id="cb17-15"><a href="bivariado.html#cb17-15" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">&quot;none&quot;</span>)</span></code></pre></div>
+<div class="figure" style="text-align: center"><span style="display:block;" id="fig:correlacion-global"></span>
+<img src="eda-cardiaco_files/figure-html/correlacion-global-1.png" alt="Correlaciones de Pearson con HeartDiseaseorAttack" width="864" />
+<p class="caption">
+Figure 4.1: Correlaciones de Pearson con HeartDiseaseorAttack
+</p>
+</div>
+<p>Las correlaciones más altas son <strong>GenHlth</strong> (0.258), <strong>Age</strong> (0.222), <strong>DiffWalk</strong> (0.213),
+<strong>HighBP</strong> (0.209) y <strong>Stroke</strong> (0.203). Las correlaciones negativas más relevantes son
+<strong>Income</strong> (−0.141) y <strong>Education</strong> (−0.100).</p>
+</div>
+<div id="bivar-binarias" class="section level2 hasAnchor" number="4.2">
+<h2><span class="header-section-number">4.2</span> Variables binarias<a href="bivariado.html#bivar-binarias" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<table class="table table-striped table-hover" style="font-size: 11px; color: black; width: auto !important; margin-left: auto; margin-right: auto;">
+<caption style="font-size: initial !important;">
+<span id="tab:bivar-binarias-tabla">Table 4.1: </span><span id="tab:bivar-binarias-tabla">Table 4.2: </span>Asociación entre variables binarias y HeartDiseaseorAttack
+</caption>
+<thead>
+<tr>
+<th style="text-align:left;">
+</th>
+<th style="text-align:left;">
+Variable
+</th>
+<th style="text-align:right;">
+Chi²
+</th>
+<th style="text-align:left;">
+p-valor
+</th>
+<th style="text-align:right;">
+V de Cramér
+</th>
+<th style="text-align:left;">
+Tasa (cat. 0)
+</th>
+<th style="text-align:left;">
+Tasa (cat. 1)
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+X-squared
+</td>
+<td style="text-align:left;">
+HighBP
+</td>
+<td style="text-align:right;">
+11119.3
+</td>
+<td style="text-align:left;font-weight: bold;color: rgba(192, 57, 43, 255) !important;">
+0.00e+00
+</td>
+<td style="text-align:right;">
+0.2094
+</td>
+<td style="text-align:left;">
+4.12%
+</td>
+<td style="text-align:left;">
+16.47%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+X-squared1
+</td>
+<td style="text-align:left;">
+HighChol
+</td>
+<td style="text-align:right;">
+8289.3
+</td>
+<td style="text-align:left;font-weight: bold;color: rgba(192, 57, 43, 255) !important;">
+0.00e+00
+</td>
+<td style="text-align:right;">
+0.1808
+</td>
+<td style="text-align:left;">
+4.89%
+</td>
+<td style="text-align:left;">
+15.57%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+X-squared2
+</td>
+<td style="text-align:left;">
+CholCheck
+</td>
+<td style="text-align:right;">
+495.7
+</td>
+<td style="text-align:left;font-weight: bold;color: black !important;">
+8.07e-110
+</td>
+<td style="text-align:right;">
+0.0442
+</td>
+<td style="text-align:left;">
+2.86%
+</td>
+<td style="text-align:left;">
+9.67%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+X-squared3
+</td>
+<td style="text-align:left;">
+Smoker
+</td>
+<td style="text-align:right;">
+3322.4
+</td>
+<td style="text-align:left;font-weight: bold;color: black !important;">
+0.00e+00
+</td>
+<td style="text-align:right;">
+0.1144
+</td>
+<td style="text-align:left;">
+6.44%
+</td>
+<td style="text-align:left;">
+13.17%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+X-squared4
+</td>
+<td style="text-align:left;">
+Stroke
+</td>
+<td style="text-align:right;">
+10454.1
+</td>
+<td style="text-align:left;font-weight: bold;color: rgba(192, 57, 43, 255) !important;">
+0.00e+00
+</td>
+<td style="text-align:right;">
+0.2030
+</td>
+<td style="text-align:left;">
+8.2%
+</td>
+<td style="text-align:left;">
+38.25%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+X-squared5
+</td>
+<td style="text-align:left;">
+PhysActivity
+</td>
+<td style="text-align:right;">
+1933.3
+</td>
+<td style="text-align:left;font-weight: bold;color: black !important;">
+0.00e+00
+</td>
+<td style="text-align:right;">
+0.0873
+</td>
+<td style="text-align:left;">
+13.91%
+</td>
+<td style="text-align:left;">
+7.97%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+X-squared6
+</td>
+<td style="text-align:left;">
+Fruits
+</td>
+<td style="text-align:right;">
+99.4
+</td>
+<td style="text-align:left;font-weight: bold;color: black !important;">
+2.11e-23
+</td>
+<td style="text-align:right;">
+0.0198
+</td>
+<td style="text-align:left;">
+10.18%
+</td>
+<td style="text-align:left;">
+8.98%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+X-squared7
+</td>
+<td style="text-align:left;">
+Veggies
+</td>
+<td style="text-align:right;">
+389.2
+</td>
+<td style="text-align:left;font-weight: bold;color: black !important;">
+1.26e-86
+</td>
+<td style="text-align:right;">
+0.0392
+</td>
+<td style="text-align:left;">
+11.79%
+</td>
+<td style="text-align:left;">
+8.87%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+X-squared8
+</td>
+<td style="text-align:left;">
+HvyAlcoholConsump
+</td>
+<td style="text-align:right;">
+213.2
+</td>
+<td style="text-align:left;font-weight: bold;color: black !important;">
+2.75e-48
+</td>
+<td style="text-align:right;">
+0.0290
+</td>
+<td style="text-align:left;">
+9.63%
+</td>
+<td style="text-align:left;">
+5.95%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+X-squared9
+</td>
+<td style="text-align:left;">
+AnyHealthcare
+</td>
+<td style="text-align:right;">
+89.0
+</td>
+<td style="text-align:left;font-weight: bold;color: black !important;">
+3.88e-21
+</td>
+<td style="text-align:right;">
+0.0187
+</td>
+<td style="text-align:left;">
+7.01%
+</td>
+<td style="text-align:left;">
+9.54%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+X-squared10
+</td>
+<td style="text-align:left;">
+NoDocbcCost
+</td>
+<td style="text-align:right;">
+243.8
+</td>
+<td style="text-align:left;font-weight: bold;color: black !important;">
+5.89e-55
+</td>
+<td style="text-align:right;">
+0.0310
+</td>
+<td style="text-align:left;">
+9.14%
+</td>
+<td style="text-align:left;">
+12.41%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+X-squared11
+</td>
+<td style="text-align:left;">
+DiffWalk
+</td>
+<td style="text-align:right;">
+11477.7
+</td>
+<td style="text-align:left;font-weight: bold;color: rgba(192, 57, 43, 255) !important;">
+0.00e+00
+</td>
+<td style="text-align:right;">
+0.2127
+</td>
+<td style="text-align:left;">
+6.62%
+</td>
+<td style="text-align:left;">
+23.23%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+X-squared12
+</td>
+<td style="text-align:left;">
+Sex
+</td>
+<td style="text-align:right;">
+1880.4
+</td>
+<td style="text-align:left;font-weight: bold;color: black !important;">
+0.00e+00
+</td>
+<td style="text-align:right;">
+0.0861
+</td>
+<td style="text-align:left;">
+7.19%
+</td>
+<td style="text-align:left;">
+12.25%
+</td>
+</tr>
+</tbody>
+</table>
+<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="bivariado.html#cb18-1" tabindex="-1"></a>tasas_bin <span class="ot">&lt;-</span> <span class="fu">do.call</span>(rbind, <span class="fu">lapply</span>(binary_vars, <span class="cf">function</span>(v) {</span>
+<span id="cb18-2"><a href="bivariado.html#cb18-2" tabindex="-1"></a>  ct    <span class="ot">&lt;-</span> <span class="fu">table</span>(df[[v]], df[[<span class="st">&quot;HeartDiseaseorAttack&quot;</span>]])</span>
+<span id="cb18-3"><a href="bivariado.html#cb18-3" tabindex="-1"></a>  cram  <span class="ot">&lt;-</span> <span class="fu">bivar_df</span>(v)<span class="sc">$</span>cramer</span>
+<span id="cb18-4"><a href="bivariado.html#cb18-4" tabindex="-1"></a>  tasa  <span class="ot">&lt;-</span> <span class="fu">prop.table</span>(ct, <span class="at">margin =</span> <span class="dv">1</span>)[, <span class="dv">2</span>] <span class="sc">*</span> <span class="dv">100</span></span>
+<span id="cb18-5"><a href="bivariado.html#cb18-5" tabindex="-1"></a>  <span class="fu">data.frame</span>(<span class="at">Variable =</span> v,</span>
+<span id="cb18-6"><a href="bivariado.html#cb18-6" tabindex="-1"></a>             <span class="at">Categoria =</span> <span class="fu">names</span>(tasa),</span>
+<span id="cb18-7"><a href="bivariado.html#cb18-7" tabindex="-1"></a>             <span class="at">Tasa =</span> <span class="fu">as.numeric</span>(tasa),</span>
+<span id="cb18-8"><a href="bivariado.html#cb18-8" tabindex="-1"></a>             <span class="at">V =</span> <span class="fu">round</span>(cram, <span class="dv">4</span>))</span>
+<span id="cb18-9"><a href="bivariado.html#cb18-9" tabindex="-1"></a>}))</span>
+<span id="cb18-10"><a href="bivariado.html#cb18-10" tabindex="-1"></a></span>
+<span id="cb18-11"><a href="bivariado.html#cb18-11" tabindex="-1"></a><span class="fu">ggplot</span>(tasas_bin, <span class="fu">aes</span>(<span class="at">x =</span> Tasa, <span class="at">y =</span> <span class="fu">reorder</span>(Variable, Tasa),</span>
+<span id="cb18-12"><a href="bivariado.html#cb18-12" tabindex="-1"></a>                       <span class="at">fill =</span> Categoria)) <span class="sc">+</span></span>
+<span id="cb18-13"><a href="bivariado.html#cb18-13" tabindex="-1"></a>  <span class="fu">geom_col</span>(<span class="at">position =</span> <span class="st">&quot;dodge&quot;</span>, <span class="at">width =</span> <span class="fl">0.6</span>, <span class="at">color =</span> <span class="st">&quot;white&quot;</span>) <span class="sc">+</span></span>
+<span id="cb18-14"><a href="bivariado.html#cb18-14" tabindex="-1"></a>  <span class="fu">scale_fill_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(bajo_color, riesgo_color)) <span class="sc">+</span></span>
+<span id="cb18-15"><a href="bivariado.html#cb18-15" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">labels =</span> <span class="cf">function</span>(x) <span class="fu">paste0</span>(x, <span class="st">&quot;%&quot;</span>)) <span class="sc">+</span></span>
+<span id="cb18-16"><a href="bivariado.html#cb18-16" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">&quot;Tasa de HD por categoría — Variables binarias&quot;</span>,</span>
+<span id="cb18-17"><a href="bivariado.html#cb18-17" tabindex="-1"></a>       <span class="at">x =</span> <span class="st">&quot;% con enfermedad cardíaca&quot;</span>, <span class="at">y =</span> <span class="cn">NULL</span>, <span class="at">fill =</span> <span class="st">&quot;Categoría&quot;</span>) <span class="sc">+</span></span>
+<span id="cb18-18"><a href="bivariado.html#cb18-18" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">&quot;bottom&quot;</span>)</span></code></pre></div>
+<div class="figure" style="text-align: center"><span style="display:block;" id="fig:bivar-binarias-plot"></span>
+<img src="eda-cardiaco_files/figure-html/bivar-binarias-plot-1.png" alt="Tasas de enfermedad cardíaca por variable binaria" width="864" />
+<p class="caption">
+Figure 4.2: Tasas de enfermedad cardíaca por variable binaria
+</p>
+</div>
+<p><strong>Hallazgos clave:</strong></p>
+<ul>
+<li><strong>HighBP</strong> (V=0.209): cuadruplica la tasa de HD (16.5% vs 4.1%).</li>
+<li><strong>Stroke</strong> (V=0.203): tasa absoluta más alta entre binarias (38.3%).</li>
+<li><strong>DiffWalk</strong> (V=0.213): quienes reportan dificultad tienen 3.5× más riesgo.</li>
+<li><strong>Smoker</strong> (V=0.114): los fumadores duplican la tasa (13.2% vs 6.4%).</li>
+</ul>
+</div>
+<div id="bivar-ordinales" class="section level2 hasAnchor" number="4.3">
+<h2><span class="header-section-number">4.3</span> Variables ordinales<a href="bivariado.html#bivar-ordinales" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<table class="table table-striped table-hover" style="font-size: 11px; color: black; width: auto !important; margin-left: auto; margin-right: auto;">
+<caption style="font-size: initial !important;">
+<span id="tab:bivar-ordinales-tabla">Table 4.3: </span><span id="tab:bivar-ordinales-tabla">Table 4.4: </span>Asociación entre variables ordinales y HeartDiseaseorAttack
+</caption>
+<thead>
+<tr>
+<th style="text-align:left;">
+</th>
+<th style="text-align:left;">
+Variable
+</th>
+<th style="text-align:right;">
+Chi²
+</th>
+<th style="text-align:left;">
+p-valor
+</th>
+<th style="text-align:right;">
+V de Cramér
+</th>
+<th style="text-align:left;">
+Tasa mínima
+</th>
+<th style="text-align:left;">
+Tasa máxima
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+X-squared
+</td>
+<td style="text-align:left;">
+GenHlth
+</td>
+<td style="text-align:right;">
+19008.2
+</td>
+<td style="text-align:left;">
+0.00e+00
+</td>
+<td style="text-align:right;">
+0.2737
+</td>
+<td style="text-align:left;">
+2.24%
+</td>
+<td style="text-align:left;">
+34%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+X-squared1
+</td>
+<td style="text-align:left;">
+Age
+</td>
+<td style="text-align:right;">
+13731.0
+</td>
+<td style="text-align:left;">
+0.00e+00
+</td>
+<td style="text-align:right;">
+0.2327
+</td>
+<td style="text-align:left;">
+0.51%
+</td>
+<td style="text-align:left;">
+23.95%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+X-squared2
+</td>
+<td style="text-align:left;">
+Education
+</td>
+<td style="text-align:right;">
+2589.8
+</td>
+<td style="text-align:left;">
+0.00e+00
+</td>
+<td style="text-align:right;">
+0.1010
+</td>
+<td style="text-align:left;">
+6.6%
+</td>
+<td style="text-align:left;">
+19.24%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+X-squared3
+</td>
+<td style="text-align:left;">
+Income
+</td>
+<td style="text-align:right;">
+5277.6
+</td>
+<td style="text-align:left;">
+0.00e+00
+</td>
+<td style="text-align:right;">
+0.1442
+</td>
+<td style="text-align:left;">
+5.07%
+</td>
+<td style="text-align:left;">
+18.65%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+X-squared4
+</td>
+<td style="text-align:left;">
+Diabetes
+</td>
+<td style="text-align:right;">
+8244.9
+</td>
+<td style="text-align:left;">
+0.00e+00
+</td>
+<td style="text-align:right;">
+0.1803
+</td>
+<td style="text-align:left;">
+7.18%
+</td>
+<td style="text-align:left;">
+22.29%
+</td>
+</tr>
+</tbody>
+</table>
+<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb19-1"><a href="bivariado.html#cb19-1" tabindex="-1"></a>genhlth_tasa <span class="ot">&lt;-</span> df <span class="sc">|&gt;</span></span>
+<span id="cb19-2"><a href="bivariado.html#cb19-2" tabindex="-1"></a>  <span class="fu">group_by</span>(<span class="at">GenHlth =</span> <span class="fu">factor</span>(GenHlth, <span class="at">levels =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>,</span>
+<span id="cb19-3"><a href="bivariado.html#cb19-3" tabindex="-1"></a>             <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">&quot;Excelente&quot;</span>,<span class="st">&quot;Muy buena&quot;</span>,<span class="st">&quot;Buena&quot;</span>,<span class="st">&quot;Regular&quot;</span>,<span class="st">&quot;Mala&quot;</span>),</span>
+<span id="cb19-4"><a href="bivariado.html#cb19-4" tabindex="-1"></a>             <span class="at">ordered =</span> <span class="cn">TRUE</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb19-5"><a href="bivariado.html#cb19-5" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">tasa =</span> <span class="fu">mean</span>(HeartDiseaseorAttack) <span class="sc">*</span> <span class="dv">100</span>)</span>
+<span id="cb19-6"><a href="bivariado.html#cb19-6" tabindex="-1"></a></span>
+<span id="cb19-7"><a href="bivariado.html#cb19-7" tabindex="-1"></a><span class="fu">ggplot</span>(genhlth_tasa, <span class="fu">aes</span>(<span class="at">x =</span> GenHlth, <span class="at">y =</span> tasa, <span class="at">fill =</span> GenHlth)) <span class="sc">+</span></span>
+<span id="cb19-8"><a href="bivariado.html#cb19-8" tabindex="-1"></a>  <span class="fu">geom_col</span>(<span class="at">color =</span> <span class="st">&quot;white&quot;</span>, <span class="at">width =</span> <span class="fl">0.6</span>) <span class="sc">+</span></span>
+<span id="cb19-9"><a href="bivariado.html#cb19-9" tabindex="-1"></a>  <span class="fu">geom_text</span>(<span class="fu">aes</span>(<span class="at">label =</span> <span class="fu">paste0</span>(<span class="fu">round</span>(tasa,<span class="dv">1</span>),<span class="st">&quot;%&quot;</span>)),</span>
+<span id="cb19-10"><a href="bivariado.html#cb19-10" tabindex="-1"></a>            <span class="at">vjust =</span> <span class="sc">-</span><span class="fl">0.4</span>, <span class="at">size =</span> <span class="dv">4</span>, <span class="at">color =</span> <span class="st">&quot;#3a3a3a&quot;</span>) <span class="sc">+</span></span>
+<span id="cb19-11"><a href="bivariado.html#cb19-11" tabindex="-1"></a>  <span class="fu">scale_fill_manual</span>(<span class="at">values =</span> <span class="fu">colorRampPalette</span>(<span class="fu">c</span>(bajo_color, riesgo_color))(<span class="dv">5</span>)) <span class="sc">+</span></span>
+<span id="cb19-12"><a href="bivariado.html#cb19-12" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">labels =</span> <span class="cf">function</span>(x) <span class="fu">paste0</span>(x,<span class="st">&quot;%&quot;</span>),</span>
+<span id="cb19-13"><a href="bivariado.html#cb19-13" tabindex="-1"></a>                     <span class="at">expand =</span> <span class="fu">expansion</span>(<span class="at">mult =</span> <span class="fu">c</span>(<span class="dv">0</span>,<span class="fl">0.15</span>))) <span class="sc">+</span></span>
+<span id="cb19-14"><a href="bivariado.html#cb19-14" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">&quot;GenHlth: predictor individual más fuerte (V=0.274)&quot;</span>,</span>
+<span id="cb19-15"><a href="bivariado.html#cb19-15" tabindex="-1"></a>       <span class="at">x =</span> <span class="st">&quot;Autopercepción de salud&quot;</span>, <span class="at">y =</span> <span class="st">&quot;% con enfermedad cardíaca&quot;</span>) <span class="sc">+</span></span>
+<span id="cb19-16"><a href="bivariado.html#cb19-16" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">&quot;none&quot;</span>)</span></code></pre></div>
+<div class="figure" style="text-align: center"><span style="display:block;" id="fig:genhlth-plot"></span>
+<img src="eda-cardiaco_files/figure-html/genhlth-plot-1.png" alt="Tasa de HD por nivel de GenHlth" width="864" />
+<p class="caption">
+Figure 4.3: Tasa de HD por nivel de GenHlth
+</p>
+</div>
+<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb20-1"><a href="bivariado.html#cb20-1" tabindex="-1"></a>age_tasa <span class="ot">&lt;-</span> df <span class="sc">|&gt;</span></span>
+<span id="cb20-2"><a href="bivariado.html#cb20-2" tabindex="-1"></a>  <span class="fu">group_by</span>(<span class="at">Age =</span> <span class="fu">factor</span>(Age, <span class="at">levels =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">13</span>, <span class="at">labels =</span> age_labels, <span class="at">ordered =</span> <span class="cn">TRUE</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb20-3"><a href="bivariado.html#cb20-3" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">tasa =</span> <span class="fu">mean</span>(HeartDiseaseorAttack) <span class="sc">*</span> <span class="dv">100</span>)</span>
+<span id="cb20-4"><a href="bivariado.html#cb20-4" tabindex="-1"></a></span>
+<span id="cb20-5"><a href="bivariado.html#cb20-5" tabindex="-1"></a><span class="fu">ggplot</span>(age_tasa, <span class="fu">aes</span>(<span class="at">x =</span> Age, <span class="at">y =</span> tasa)) <span class="sc">+</span></span>
+<span id="cb20-6"><a href="bivariado.html#cb20-6" tabindex="-1"></a>  <span class="fu">geom_col</span>(<span class="at">fill =</span> nude_palette[<span class="dv">2</span>], <span class="at">color =</span> <span class="st">&quot;white&quot;</span>, <span class="at">width =</span> <span class="fl">0.7</span>) <span class="sc">+</span></span>
+<span id="cb20-7"><a href="bivariado.html#cb20-7" tabindex="-1"></a>  <span class="fu">geom_text</span>(<span class="fu">aes</span>(<span class="at">label =</span> <span class="fu">paste0</span>(<span class="fu">round</span>(tasa,<span class="dv">1</span>),<span class="st">&quot;%&quot;</span>)),</span>
+<span id="cb20-8"><a href="bivariado.html#cb20-8" tabindex="-1"></a>            <span class="at">vjust =</span> <span class="sc">-</span><span class="fl">0.4</span>, <span class="at">size =</span> <span class="fl">2.8</span>, <span class="at">color =</span> <span class="st">&quot;#3a3a3a&quot;</span>) <span class="sc">+</span></span>
+<span id="cb20-9"><a href="bivariado.html#cb20-9" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">labels =</span> <span class="cf">function</span>(x) <span class="fu">paste0</span>(x,<span class="st">&quot;%&quot;</span>),</span>
+<span id="cb20-10"><a href="bivariado.html#cb20-10" tabindex="-1"></a>                     <span class="at">expand =</span> <span class="fu">expansion</span>(<span class="at">mult =</span> <span class="fu">c</span>(<span class="dv">0</span>,<span class="fl">0.15</span>))) <span class="sc">+</span></span>
+<span id="cb20-11"><a href="bivariado.html#cb20-11" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">&quot;Age: gradiente monótono de riesgo (V=0.233)&quot;</span>,</span>
+<span id="cb20-12"><a href="bivariado.html#cb20-12" tabindex="-1"></a>       <span class="at">x =</span> <span class="st">&quot;Grupo etario&quot;</span>, <span class="at">y =</span> <span class="st">&quot;% con enfermedad cardíaca&quot;</span>) <span class="sc">+</span></span>
+<span id="cb20-13"><a href="bivariado.html#cb20-13" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">angle =</span> <span class="dv">35</span>, <span class="at">hjust =</span> <span class="dv">1</span>))</span></code></pre></div>
+<div class="figure" style="text-align: center"><span style="display:block;" id="fig:age-bivar-plot"></span>
+<img src="eda-cardiaco_files/figure-html/age-bivar-plot-1.png" alt="Tasa de HD por grupo etario" width="864" />
+<p class="caption">
+Figure 4.4: Tasa de HD por grupo etario
+</p>
+</div>
+</div>
+<div id="bivar-continuas" class="section level2 hasAnchor" number="4.4">
+<h2><span class="header-section-number">4.4</span> Variables continuas<a href="bivariado.html#bivar-continuas" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<table class="table table-striped table-hover" style="font-size: 11px; color: black; width: auto !important; margin-left: auto; margin-right: auto;">
+<caption style="font-size: initial !important;">
+<span id="tab:bivar-continuas-tabla">Table 4.5: </span><span id="tab:bivar-continuas-tabla">Table 4.6: </span>Mann-Whitney y correlación — Variables continuas
+</caption>
+<thead>
+<tr>
+<th style="text-align:left;">
+Variable
+</th>
+<th style="text-align:right;">
+Media (sin HD)
+</th>
+<th style="text-align:right;">
+Mediana (sin HD)
+</th>
+<th style="text-align:right;">
+Media (con HD)
+</th>
+<th style="text-align:right;">
+Mediana (con HD)
+</th>
+<th style="text-align:left;">
+p-valor MW
+</th>
+<th style="text-align:right;">
+&amp;#124;r&amp;#124; Pearson
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+BMI
+</td>
+<td style="text-align:right;">
+28.27
+</td>
+<td style="text-align:right;">
+27
+</td>
+<td style="text-align:right;">
+29.47
+</td>
+<td style="text-align:right;">
+28
+</td>
+<td style="text-align:left;">
+1.45e-225
+</td>
+<td style="text-align:right;">
+0.0529
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+MentHlth
+</td>
+<td style="text-align:right;">
+3.03
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+4.67
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:left;">
+1.23e-68
+</td>
+<td style="text-align:right;">
+0.0646
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+PhysHlth
+</td>
+<td style="text-align:right;">
+3.73
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+9.15
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:left;">
+0.00e+00
+</td>
+<td style="text-align:right;">
+0.1817
+</td>
+</tr>
+</tbody>
+</table>
+<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21-1"><a href="bivariado.html#cb21-1" tabindex="-1"></a>df_box <span class="ot">&lt;-</span> df <span class="sc">|&gt;</span></span>
+<span id="cb21-2"><a href="bivariado.html#cb21-2" tabindex="-1"></a>  <span class="fu">select</span>(HeartDiseaseorAttack, <span class="fu">all_of</span>(continuous_vars)) <span class="sc">|&gt;</span></span>
+<span id="cb21-3"><a href="bivariado.html#cb21-3" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">Clase =</span> <span class="fu">ifelse</span>(HeartDiseaseorAttack <span class="sc">==</span> <span class="dv">1</span>, <span class="st">&quot;Con HD&quot;</span>, <span class="st">&quot;Sin HD&quot;</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb21-4"><a href="bivariado.html#cb21-4" tabindex="-1"></a>  <span class="fu">pivot_longer</span>(<span class="fu">all_of</span>(continuous_vars), <span class="at">names_to =</span> <span class="st">&quot;Variable&quot;</span>, <span class="at">values_to =</span> <span class="st">&quot;Valor&quot;</span>)</span>
+<span id="cb21-5"><a href="bivariado.html#cb21-5" tabindex="-1"></a></span>
+<span id="cb21-6"><a href="bivariado.html#cb21-6" tabindex="-1"></a><span class="fu">ggplot</span>(df_box, <span class="fu">aes</span>(<span class="at">x =</span> Clase, <span class="at">y =</span> Valor, <span class="at">fill =</span> Clase)) <span class="sc">+</span></span>
+<span id="cb21-7"><a href="bivariado.html#cb21-7" tabindex="-1"></a>  <span class="fu">geom_boxplot</span>(<span class="at">outlier.size =</span> <span class="fl">0.5</span>, <span class="at">outlier.alpha =</span> <span class="fl">0.15</span>) <span class="sc">+</span></span>
+<span id="cb21-8"><a href="bivariado.html#cb21-8" tabindex="-1"></a>  <span class="fu">stat_summary</span>(<span class="at">fun =</span> mean, <span class="at">geom =</span> <span class="st">&quot;point&quot;</span>, <span class="at">shape =</span> <span class="dv">18</span>, <span class="at">size =</span> <span class="fl">2.5</span>, <span class="at">color =</span> <span class="st">&quot;black&quot;</span>) <span class="sc">+</span></span>
+<span id="cb21-9"><a href="bivariado.html#cb21-9" tabindex="-1"></a>  <span class="fu">scale_fill_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(bajo_color, riesgo_color)) <span class="sc">+</span></span>
+<span id="cb21-10"><a href="bivariado.html#cb21-10" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span>Variable, <span class="at">scales =</span> <span class="st">&quot;free_y&quot;</span>) <span class="sc">+</span></span>
+<span id="cb21-11"><a href="bivariado.html#cb21-11" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">&quot;Variables continuas por clase (♦ = media)&quot;</span>,</span>
+<span id="cb21-12"><a href="bivariado.html#cb21-12" tabindex="-1"></a>       <span class="at">x =</span> <span class="cn">NULL</span>, <span class="at">y =</span> <span class="st">&quot;Valor&quot;</span>) <span class="sc">+</span></span>
+<span id="cb21-13"><a href="bivariado.html#cb21-13" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">&quot;none&quot;</span>,</span>
+<span id="cb21-14"><a href="bivariado.html#cb21-14" tabindex="-1"></a>        <span class="at">strip.text =</span> <span class="fu">element_text</span>(<span class="at">face =</span> <span class="st">&quot;bold&quot;</span>))</span></code></pre></div>
+<div class="figure" style="text-align: center"><span style="display:block;" id="fig:bivar-continuas-boxplot"></span>
+<img src="eda-cardiaco_files/figure-html/bivar-continuas-boxplot-1.png" alt="Distribución de variables continuas por clase" width="864" />
+<p class="caption">
+Figure 4.5: Distribución de variables continuas por clase
+</p>
+</div>
+</div>
+<div id="interacciones" class="section level2 hasAnchor" number="4.5">
+<h2><span class="header-section-number">4.5</span> Interacciones entre factores<a href="bivariado.html#interacciones" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb22-1"><a href="bivariado.html#cb22-1" tabindex="-1"></a>pivot1 <span class="ot">&lt;-</span> df <span class="sc">|&gt;</span></span>
+<span id="cb22-2"><a href="bivariado.html#cb22-2" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">HighBP_lbl  =</span> <span class="fu">ifelse</span>(HighBP<span class="sc">==</span><span class="dv">1</span>,<span class="st">&quot;Con HTA&quot;</span>,<span class="st">&quot;Sin HTA&quot;</span>),</span>
+<span id="cb22-3"><a href="bivariado.html#cb22-3" tabindex="-1"></a>         <span class="at">HighChol_lbl =</span> <span class="fu">ifelse</span>(HighChol<span class="sc">==</span><span class="dv">1</span>,<span class="st">&quot;Con Col. alto&quot;</span>,<span class="st">&quot;Sin Col. alto&quot;</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb22-4"><a href="bivariado.html#cb22-4" tabindex="-1"></a>  <span class="fu">group_by</span>(HighBP_lbl, HighChol_lbl) <span class="sc">|&gt;</span></span>
+<span id="cb22-5"><a href="bivariado.html#cb22-5" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">tasa =</span> <span class="fu">mean</span>(HeartDiseaseorAttack)<span class="sc">*</span><span class="dv">100</span>, <span class="at">.groups=</span><span class="st">&quot;drop&quot;</span>)</span>
+<span id="cb22-6"><a href="bivariado.html#cb22-6" tabindex="-1"></a></span>
+<span id="cb22-7"><a href="bivariado.html#cb22-7" tabindex="-1"></a>p_int1 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(pivot1, <span class="fu">aes</span>(<span class="at">x =</span> HighBP_lbl, <span class="at">y =</span> HighChol_lbl, <span class="at">fill =</span> tasa)) <span class="sc">+</span></span>
+<span id="cb22-8"><a href="bivariado.html#cb22-8" tabindex="-1"></a>  <span class="fu">geom_tile</span>() <span class="sc">+</span></span>
+<span id="cb22-9"><a href="bivariado.html#cb22-9" tabindex="-1"></a>  <span class="fu">geom_text</span>(<span class="fu">aes</span>(<span class="at">label =</span> <span class="fu">paste0</span>(<span class="fu">round</span>(tasa,<span class="dv">1</span>),<span class="st">&quot;%&quot;</span>)), <span class="at">color =</span> <span class="st">&quot;white&quot;</span>, <span class="at">size =</span> <span class="dv">5</span>) <span class="sc">+</span></span>
+<span id="cb22-10"><a href="bivariado.html#cb22-10" tabindex="-1"></a>  <span class="fu">scale_fill_gradient</span>(<span class="at">low =</span> bajo_color, <span class="at">high =</span> riesgo_color) <span class="sc">+</span></span>
+<span id="cb22-11"><a href="bivariado.html#cb22-11" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">&quot;HighBP × HighChol&quot;</span>, <span class="at">x =</span> <span class="cn">NULL</span>, <span class="at">y =</span> <span class="cn">NULL</span>, <span class="at">fill =</span> <span class="st">&quot;% HD&quot;</span>) <span class="sc">+</span></span>
+<span id="cb22-12"><a href="bivariado.html#cb22-12" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">&quot;right&quot;</span>)</span>
+<span id="cb22-13"><a href="bivariado.html#cb22-13" tabindex="-1"></a></span>
+<span id="cb22-14"><a href="bivariado.html#cb22-14" tabindex="-1"></a>pivot2 <span class="ot">&lt;-</span> df <span class="sc">|&gt;</span></span>
+<span id="cb22-15"><a href="bivariado.html#cb22-15" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">Stroke_lbl =</span> <span class="fu">ifelse</span>(Stroke<span class="sc">==</span><span class="dv">1</span>,<span class="st">&quot;Con ACV&quot;</span>,<span class="st">&quot;Sin ACV&quot;</span>),</span>
+<span id="cb22-16"><a href="bivariado.html#cb22-16" tabindex="-1"></a>         <span class="at">HighBP_lbl =</span> <span class="fu">ifelse</span>(HighBP<span class="sc">==</span><span class="dv">1</span>,<span class="st">&quot;Con HTA&quot;</span>,<span class="st">&quot;Sin HTA&quot;</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb22-17"><a href="bivariado.html#cb22-17" tabindex="-1"></a>  <span class="fu">group_by</span>(Stroke_lbl, HighBP_lbl) <span class="sc">|&gt;</span></span>
+<span id="cb22-18"><a href="bivariado.html#cb22-18" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">tasa =</span> <span class="fu">mean</span>(HeartDiseaseorAttack)<span class="sc">*</span><span class="dv">100</span>, <span class="at">.groups=</span><span class="st">&quot;drop&quot;</span>)</span>
+<span id="cb22-19"><a href="bivariado.html#cb22-19" tabindex="-1"></a></span>
+<span id="cb22-20"><a href="bivariado.html#cb22-20" tabindex="-1"></a>p_int2 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(pivot2, <span class="fu">aes</span>(<span class="at">x =</span> Stroke_lbl, <span class="at">y =</span> HighBP_lbl, <span class="at">fill =</span> tasa)) <span class="sc">+</span></span>
+<span id="cb22-21"><a href="bivariado.html#cb22-21" tabindex="-1"></a>  <span class="fu">geom_tile</span>() <span class="sc">+</span></span>
+<span id="cb22-22"><a href="bivariado.html#cb22-22" tabindex="-1"></a>  <span class="fu">geom_text</span>(<span class="fu">aes</span>(<span class="at">label =</span> <span class="fu">paste0</span>(<span class="fu">round</span>(tasa,<span class="dv">1</span>),<span class="st">&quot;%&quot;</span>)), <span class="at">color =</span> <span class="st">&quot;white&quot;</span>, <span class="at">size =</span> <span class="dv">5</span>) <span class="sc">+</span></span>
+<span id="cb22-23"><a href="bivariado.html#cb22-23" tabindex="-1"></a>  <span class="fu">scale_fill_gradient</span>(<span class="at">low =</span> bajo_color, <span class="at">high =</span> riesgo_color) <span class="sc">+</span></span>
+<span id="cb22-24"><a href="bivariado.html#cb22-24" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">&quot;Stroke × HighBP&quot;</span>, <span class="at">x =</span> <span class="cn">NULL</span>, <span class="at">y =</span> <span class="cn">NULL</span>, <span class="at">fill =</span> <span class="st">&quot;% HD&quot;</span>) <span class="sc">+</span></span>
+<span id="cb22-25"><a href="bivariado.html#cb22-25" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">&quot;right&quot;</span>)</span>
+<span id="cb22-26"><a href="bivariado.html#cb22-26" tabindex="-1"></a></span>
+<span id="cb22-27"><a href="bivariado.html#cb22-27" tabindex="-1"></a><span class="fu">grid.arrange</span>(p_int1, p_int2, <span class="at">ncol =</span> <span class="dv">2</span>)</span></code></pre></div>
+<div class="figure" style="text-align: center"><span style="display:block;" id="fig:interacciones"></span>
+<img src="eda-cardiaco_files/figure-html/interacciones-1.png" alt="Efectos sinérgicos entre pares de factores de riesgo" width="864" />
+<p class="caption">
+Figure 4.6: Efectos sinérgicos entre pares de factores de riesgo
+</p>
+</div>
+<p><strong>Efectos sinérgicos detectados:</strong></p>
+<ul>
+<li><strong>HighBP × HighChol</strong> → 21.1% vs 2.8% (sin ninguno) — diferencia de 7.5×</li>
+<li><strong>Stroke × HighBP</strong> → 42.0% — la tasa más alta del análisis</li>
+<li><strong>DiffWalk × GenHlth “Mala”</strong> → 36.8%</li>
+</ul>
+</div>
+<div id="ranking" class="section level2 hasAnchor" number="4.6">
+<h2><span class="header-section-number">4.6</span> Ranking de importancia bivariada<a href="bivariado.html#ranking" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb23-1"><a href="bivariado.html#cb23-1" tabindex="-1"></a>scores <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
+<span id="cb23-2"><a href="bivariado.html#cb23-2" tabindex="-1"></a>  <span class="fu">sapply</span>(<span class="fu">c</span>(binary_vars, ordinal_vars), <span class="cf">function</span>(v) {</span>
+<span id="cb23-3"><a href="bivariado.html#cb23-3" tabindex="-1"></a>    ct  <span class="ot">&lt;-</span> <span class="fu">table</span>(df[[v]], df<span class="sc">$</span>HeartDiseaseorAttack)</span>
+<span id="cb23-4"><a href="bivariado.html#cb23-4" tabindex="-1"></a>    chi <span class="ot">&lt;-</span> <span class="fu">chisq.test</span>(ct, <span class="at">correct =</span> <span class="cn">FALSE</span>)<span class="sc">$</span>statistic</span>
+<span id="cb23-5"><a href="bivariado.html#cb23-5" tabindex="-1"></a>    n   <span class="ot">&lt;-</span> <span class="fu">sum</span>(ct)</span>
+<span id="cb23-6"><a href="bivariado.html#cb23-6" tabindex="-1"></a>    <span class="fu">sqrt</span>(chi <span class="sc">/</span> (n <span class="sc">*</span> (<span class="fu">min</span>(<span class="fu">dim</span>(ct)) <span class="sc">-</span> <span class="dv">1</span>)))</span>
+<span id="cb23-7"><a href="bivariado.html#cb23-7" tabindex="-1"></a>  }),</span>
+<span id="cb23-8"><a href="bivariado.html#cb23-8" tabindex="-1"></a>  <span class="fu">sapply</span>(continuous_vars, <span class="cf">function</span>(v) <span class="fu">abs</span>(<span class="fu">cor</span>(df[[v]], df<span class="sc">$</span>HeartDiseaseorAttack)))</span>
+<span id="cb23-9"><a href="bivariado.html#cb23-9" tabindex="-1"></a>)</span>
+<span id="cb23-10"><a href="bivariado.html#cb23-10" tabindex="-1"></a></span>
+<span id="cb23-11"><a href="bivariado.html#cb23-11" tabindex="-1"></a>df_scores <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb23-12"><a href="bivariado.html#cb23-12" tabindex="-1"></a>  <span class="at">Variable =</span> <span class="fu">names</span>(scores),</span>
+<span id="cb23-13"><a href="bivariado.html#cb23-13" tabindex="-1"></a>  <span class="at">Score    =</span> <span class="fu">as.numeric</span>(scores),</span>
+<span id="cb23-14"><a href="bivariado.html#cb23-14" tabindex="-1"></a>  <span class="at">Tipo     =</span> <span class="fu">c</span>(<span class="fu">rep</span>(<span class="st">&quot;Binaria&quot;</span>, <span class="fu">length</span>(binary_vars)),</span>
+<span id="cb23-15"><a href="bivariado.html#cb23-15" tabindex="-1"></a>               <span class="fu">rep</span>(<span class="st">&quot;Ordinal&quot;</span>, <span class="fu">length</span>(ordinal_vars)),</span>
+<span id="cb23-16"><a href="bivariado.html#cb23-16" tabindex="-1"></a>               <span class="fu">rep</span>(<span class="st">&quot;Continua&quot;</span>, <span class="fu">length</span>(continuous_vars)))</span>
+<span id="cb23-17"><a href="bivariado.html#cb23-17" tabindex="-1"></a>) <span class="sc">|&gt;</span> <span class="fu">arrange</span>(<span class="fu">desc</span>(Score))</span>
+<span id="cb23-18"><a href="bivariado.html#cb23-18" tabindex="-1"></a></span>
+<span id="cb23-19"><a href="bivariado.html#cb23-19" tabindex="-1"></a><span class="fu">ggplot</span>(df_scores, <span class="fu">aes</span>(<span class="at">x =</span> Score, <span class="at">y =</span> <span class="fu">reorder</span>(Variable, Score),</span>
+<span id="cb23-20"><a href="bivariado.html#cb23-20" tabindex="-1"></a>                       <span class="at">fill =</span> <span class="fu">case_when</span>(Score <span class="sc">&gt;</span> <span class="fl">0.15</span> <span class="sc">~</span> <span class="st">&quot;Alta (&gt;0.15)&quot;</span>,</span>
+<span id="cb23-21"><a href="bivariado.html#cb23-21" tabindex="-1"></a>                                        Score <span class="sc">&gt;</span> <span class="fl">0.08</span> <span class="sc">~</span> <span class="st">&quot;Moderada (&gt;0.08)&quot;</span>,</span>
+<span id="cb23-22"><a href="bivariado.html#cb23-22" tabindex="-1"></a>                                        <span class="cn">TRUE</span>          <span class="sc">~</span> <span class="st">&quot;Baja&quot;</span>))) <span class="sc">+</span></span>
+<span id="cb23-23"><a href="bivariado.html#cb23-23" tabindex="-1"></a>  <span class="fu">geom_col</span>(<span class="at">color =</span> <span class="st">&quot;white&quot;</span>, <span class="at">width =</span> <span class="fl">0.65</span>) <span class="sc">+</span></span>
+<span id="cb23-24"><a href="bivariado.html#cb23-24" tabindex="-1"></a>  <span class="fu">scale_fill_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">&quot;Alta (&gt;0.15)&quot;</span> <span class="ot">=</span> riesgo_color,</span>
+<span id="cb23-25"><a href="bivariado.html#cb23-25" tabindex="-1"></a>                                <span class="st">&quot;Moderada (&gt;0.08)&quot;</span> <span class="ot">=</span> <span class="st">&quot;#E67E22&quot;</span>,</span>
+<span id="cb23-26"><a href="bivariado.html#cb23-26" tabindex="-1"></a>                                <span class="st">&quot;Baja&quot;</span> <span class="ot">=</span> bajo_color)) <span class="sc">+</span></span>
+<span id="cb23-27"><a href="bivariado.html#cb23-27" tabindex="-1"></a>  <span class="fu">geom_vline</span>(<span class="at">xintercept =</span> <span class="fu">c</span>(<span class="fl">0.08</span>, <span class="fl">0.15</span>), <span class="at">linetype =</span> <span class="st">&quot;dashed&quot;</span>,</span>
+<span id="cb23-28"><a href="bivariado.html#cb23-28" tabindex="-1"></a>             <span class="at">color =</span> <span class="fu">c</span>(<span class="st">&quot;#E67E22&quot;</span>, riesgo_color), <span class="at">linewidth =</span> <span class="fl">0.7</span>) <span class="sc">+</span></span>
+<span id="cb23-29"><a href="bivariado.html#cb23-29" tabindex="-1"></a>  <span class="fu">geom_text</span>(<span class="fu">aes</span>(<span class="at">label =</span> <span class="fu">round</span>(Score, <span class="dv">4</span>)), <span class="at">hjust =</span> <span class="sc">-</span><span class="fl">0.1</span>, <span class="at">size =</span> <span class="dv">3</span>) <span class="sc">+</span></span>
+<span id="cb23-30"><a href="bivariado.html#cb23-30" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">&quot;Ranking de asociación con HeartDiseaseorAttack&quot;</span>,</span>
+<span id="cb23-31"><a href="bivariado.html#cb23-31" tabindex="-1"></a>       <span class="at">subtitle =</span> <span class="st">&quot;V de Cramér para categóricas · |r| de Pearson para continuas&quot;</span>,</span>
+<span id="cb23-32"><a href="bivariado.html#cb23-32" tabindex="-1"></a>       <span class="at">x =</span> <span class="st">&quot;Score&quot;</span>, <span class="at">y =</span> <span class="cn">NULL</span>, <span class="at">fill =</span> <span class="st">&quot;Magnitud&quot;</span>) <span class="sc">+</span></span>
+<span id="cb23-33"><a href="bivariado.html#cb23-33" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">&quot;bottom&quot;</span>)</span></code></pre></div>
+<div class="figure" style="text-align: center"><span style="display:block;" id="fig:ranking-plot"></span>
+<img src="eda-cardiaco_files/figure-html/ranking-plot-1.png" alt="Ranking de asociación de todas las variables con el target" width="864" />
+<p class="caption">
+Figure 4.7: Ranking de asociación de todas las variables con el target
+</p>
+</div>
+
+</div>
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="univariado.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="hallazgos.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+  "sharing": {
+    "github": true,
+    "facebook": true,
+    "twitter": true,
+    "linkedin": false,
+    "weibo": false,
+    "instapaper": false,
+    "vk": false,
+    "whatsapp": false,
+    "all": ["facebook", "twitter", "linkedin", "weibo", "instapaper"]
+  },
+  "fontsettings": {
+    "theme": "white",
+    "family": "sans",
+    "size": 2
+  },
+  "edit": {
+    "link": null,
+    "text": null
+  },
+  "history": {
+    "link": null,
+    "text": null
+  },
+  "view": {
+    "link": null,
+    "text": null
+  },
+  "download": ["eda-cardiaco.pdf"],
+  "search": {
+    "engine": "fuse",
+    "options": null
+  },
+  "toc": {
+    "collapse": "subsection",
+    "scroll_highlight": true
+  },
+  "toolbar": {
+    "position": "fixed"
+  }
+});
+});
+</script>
+
+</body>
+
+</html>

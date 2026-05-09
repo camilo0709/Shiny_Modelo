@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>Capítulo 5 Hallazgos principales | Análisis Exploratorio de Indicadores de Salud y Factores Asociados a Enfermedades Cardíacas</title>
+  <meta name="description" content="EDA sobre los factores de riesgo cardiovascular en el dataset BRFSS 2015, incluyendo análisis univariado, bivariado y modelado predictivo con XGBoost." />
+  <meta name="generator" content="bookdown 0.46 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="Capítulo 5 Hallazgos principales | Análisis Exploratorio de Indicadores de Salud y Factores Asociados a Enfermedades Cardíacas" />
+  <meta property="og:type" content="book" />
+  
+  <meta property="og:description" content="EDA sobre los factores de riesgo cardiovascular en el dataset BRFSS 2015, incluyendo análisis univariado, bivariado y modelado predictivo con XGBoost." />
+  
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Capítulo 5 Hallazgos principales | Análisis Exploratorio de Indicadores de Salud y Factores Asociados a Enfermedades Cardíacas" />
+  
+  <meta name="twitter:description" content="EDA sobre los factores de riesgo cardiovascular en el dataset BRFSS 2015, incluyendo análisis univariado, bivariado y modelado predictivo con XGBoost." />
+  
+
+<meta name="author" content="Alavarado Natalia y Mujica Camilo" />
+
+
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  
+<link rel="prev" href="bivariado.html"/>
+<link rel="next" href="modelado.html"/>
+<script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+<link href="libs/anchor-sections-1.1.0/anchor-sections.css" rel="stylesheet" />
+<link href="libs/anchor-sections-1.1.0/anchor-sections-hash.css" rel="stylesheet" />
+<script src="libs/anchor-sections-1.1.0/anchor-sections.js"></script>
+<script src="libs/kePrint-0.0.1/kePrint.js"></script>
+<link href="libs/lightable-0.0.1/lightable.css" rel="stylesheet" />
+<meta name="description" content="EDA de indicadores de salud y factores asociados a enfermedades cardíacas — BRFSS 2015">
+<meta name="keywords" content="R, bookdown, EDA, enfermedades cardiacas, BRFSS, XGBoost, salud">
+<meta property="og:title" content="EDA Enfermedades Cardíacas BRFSS 2015">
+<meta property="og:description" content="Análisis exploratorio de indicadores de salud y modelado predictivo con XGBoost">
+
+
+<style type="text/css">
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+<style type="text/css">
+  
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+</style>
+
+<link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i>Prefacio</a>
+<ul>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html#estructura-del-libro"><i class="fa fa-check"></i>Estructura del libro</a></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html#datos"><i class="fa fa-check"></i>Datos</a></li>
+</ul></li>
+<li class="chapter" data-level="1" data-path="introduccion.html"><a href="introduccion.html"><i class="fa fa-check"></i><b>1</b> Introducción</a>
+<ul>
+<li class="chapter" data-level="1.1" data-path="introduccion.html"><a href="introduccion.html#contexto"><i class="fa fa-check"></i><b>1.1</b> Contexto</a></li>
+<li class="chapter" data-level="1.2" data-path="introduccion.html"><a href="introduccion.html#objetivo-general"><i class="fa fa-check"></i><b>1.2</b> Objetivo general</a></li>
+<li class="chapter" data-level="1.3" data-path="introduccion.html"><a href="introduccion.html#objetivos-espec%C3%ADficos"><i class="fa fa-check"></i><b>1.3</b> Objetivos específicos</a></li>
+<li class="chapter" data-level="1.4" data-path="introduccion.html"><a href="introduccion.html#marco-te%C3%B3rico"><i class="fa fa-check"></i><b>1.4</b> Marco teórico</a>
+<ul>
+<li class="chapter" data-level="1.4.1" data-path="introduccion.html"><a href="introduccion.html#enfermedades-card%C3%ADacas-e-insuficiencia-card%C3%ADaca"><i class="fa fa-check"></i><b>1.4.1</b> Enfermedades cardíacas e insuficiencia cardíaca</a></li>
+<li class="chapter" data-level="1.4.2" data-path="introduccion.html"><a href="introduccion.html#el-sistema-brfss-como-fuente-de-datos"><i class="fa fa-check"></i><b>1.4.2</b> El sistema BRFSS como fuente de datos</a></li>
+<li class="chapter" data-level="1.4.3" data-path="introduccion.html"><a href="introduccion.html#m%C3%A9tricas-estad%C3%ADsticas-utilizadas"><i class="fa fa-check"></i><b>1.4.3</b> Métricas estadísticas utilizadas</a></li>
+<li class="chapter" data-level="1.4.4" data-path="introduccion.html"><a href="introduccion.html#algoritmos-de-clasificaci%C3%B3n"><i class="fa fa-check"></i><b>1.4.4</b> Algoritmos de clasificación</a></li>
+<li class="chapter" data-level="1.4.5" data-path="introduccion.html"><a href="introduccion.html#manejo-de-clases-desbalanceadas"><i class="fa fa-check"></i><b>1.4.5</b> Manejo de clases desbalanceadas</a></li>
+</ul></li>
+<li class="chapter" data-level="1.5" data-path="introduccion.html"><a href="introduccion.html#descripci%C3%B3n-del-dataset"><i class="fa fa-check"></i><b>1.5</b> Descripción del dataset</a></li>
+</ul></li>
+<li class="chapter" data-level="2" data-path="limpieza.html"><a href="limpieza.html"><i class="fa fa-check"></i><b>2</b> Limpieza y validación de datos</a>
+<ul>
+<li class="chapter" data-level="2.1" data-path="limpieza.html"><a href="limpieza.html#conversi%C3%B3n-de-tipos"><i class="fa fa-check"></i><b>2.1</b> Conversión de tipos</a></li>
+<li class="chapter" data-level="2.2" data-path="limpieza.html"><a href="limpieza.html#valores-nulos"><i class="fa fa-check"></i><b>2.2</b> Valores nulos</a></li>
+<li class="chapter" data-level="2.3" data-path="limpieza.html"><a href="limpieza.html#registros-duplicados"><i class="fa fa-check"></i><b>2.3</b> Registros duplicados</a></li>
+<li class="chapter" data-level="2.4" data-path="limpieza.html"><a href="limpieza.html#verificaci%C3%B3n-de-rangos"><i class="fa fa-check"></i><b>2.4</b> Verificación de rangos</a></li>
+<li class="chapter" data-level="2.5" data-path="limpieza.html"><a href="limpieza.html#an%C3%A1lisis-de-valores-at%C3%ADpicos"><i class="fa fa-check"></i><b>2.5</b> Análisis de valores atípicos</a></li>
+</ul></li>
+<li class="chapter" data-level="3" data-path="univariado.html"><a href="univariado.html"><i class="fa fa-check"></i><b>3</b> Análisis univariado</a>
+<ul>
+<li class="chapter" data-level="3.1" data-path="univariado.html"><a href="univariado.html#objetivo"><i class="fa fa-check"></i><b>3.1</b> Variable objetivo</a></li>
+<li class="chapter" data-level="3.2" data-path="univariado.html"><a href="univariado.html#binarias"><i class="fa fa-check"></i><b>3.2</b> Variables binarias</a></li>
+<li class="chapter" data-level="3.3" data-path="univariado.html"><a href="univariado.html#ordinales"><i class="fa fa-check"></i><b>3.3</b> Variables ordinales</a></li>
+<li class="chapter" data-level="3.4" data-path="univariado.html"><a href="univariado.html#continuas"><i class="fa fa-check"></i><b>3.4</b> Variables continuas</a>
+<ul>
+<li class="chapter" data-level="3.4.1" data-path="univariado.html"><a href="univariado.html#bmi"><i class="fa fa-check"></i><b>3.4.1</b> BMI</a></li>
+<li class="chapter" data-level="3.4.2" data-path="univariado.html"><a href="univariado.html#menthlth-y-physhlth"><i class="fa fa-check"></i><b>3.4.2</b> MentHlth y PhysHlth</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="4" data-path="bivariado.html"><a href="bivariado.html"><i class="fa fa-check"></i><b>4</b> Análisis bivariado</a>
+<ul>
+<li class="chapter" data-level="4.1" data-path="bivariado.html"><a href="bivariado.html#correlacion"><i class="fa fa-check"></i><b>4.1</b> Correlación global con la variable objetivo</a></li>
+<li class="chapter" data-level="4.2" data-path="bivariado.html"><a href="bivariado.html#bivar-binarias"><i class="fa fa-check"></i><b>4.2</b> Variables binarias</a></li>
+<li class="chapter" data-level="4.3" data-path="bivariado.html"><a href="bivariado.html#bivar-ordinales"><i class="fa fa-check"></i><b>4.3</b> Variables ordinales</a></li>
+<li class="chapter" data-level="4.4" data-path="bivariado.html"><a href="bivariado.html#bivar-continuas"><i class="fa fa-check"></i><b>4.4</b> Variables continuas</a></li>
+<li class="chapter" data-level="4.5" data-path="bivariado.html"><a href="bivariado.html#interacciones"><i class="fa fa-check"></i><b>4.5</b> Interacciones entre factores</a></li>
+<li class="chapter" data-level="4.6" data-path="bivariado.html"><a href="bivariado.html#ranking"><i class="fa fa-check"></i><b>4.6</b> Ranking de importancia bivariada</a></li>
+</ul></li>
+<li class="chapter" data-level="5" data-path="hallazgos.html"><a href="hallazgos.html"><i class="fa fa-check"></i><b>5</b> Hallazgos principales</a>
+<ul>
+<li class="chapter" data-level="5.1" data-path="hallazgos.html"><a href="hallazgos.html#factores-principales"><i class="fa fa-check"></i><b>5.1</b> Factores con mayor asociación</a>
+<ul>
+<li class="chapter" data-level="5.1.1" data-path="hallazgos.html"><a href="hallazgos.html#factores-cl%C3%ADnicos-y-funcionales-alta-magnitud"><i class="fa fa-check"></i><b>5.1.1</b> Factores clínicos y funcionales (alta magnitud)</a></li>
+<li class="chapter" data-level="5.1.2" data-path="hallazgos.html"><a href="hallazgos.html#factores-conductuales-magnitud-moderada"><i class="fa fa-check"></i><b>5.1.2</b> Factores conductuales (magnitud moderada)</a></li>
+<li class="chapter" data-level="5.1.3" data-path="hallazgos.html"><a href="hallazgos.html#determinantes-socioecon%C3%B3micos"><i class="fa fa-check"></i><b>5.1.3</b> Determinantes socioeconómicos</a></li>
+</ul></li>
+<li class="chapter" data-level="5.2" data-path="hallazgos.html"><a href="hallazgos.html#interacciones-hallazgos"><i class="fa fa-check"></i><b>5.2</b> Interacciones sinérgicas</a></li>
+<li class="chapter" data-level="5.3" data-path="hallazgos.html"><a href="hallazgos.html#variables-bajas"><i class="fa fa-check"></i><b>5.3</b> Variables con baja utilidad individual</a></li>
+<li class="chapter" data-level="5.4" data-path="hallazgos.html"><a href="hallazgos.html#consideraciones-modelado"><i class="fa fa-check"></i><b>5.4</b> Consideraciones para el modelado</a></li>
+</ul></li>
+<li class="chapter" data-level="6" data-path="modelado.html"><a href="modelado.html"><i class="fa fa-check"></i><b>6</b> Modelado predictivo</a>
+<ul>
+<li class="chapter" data-level="6.1" data-path="modelado.html"><a href="modelado.html#preparaci%C3%B3n-de-datos"><i class="fa fa-check"></i><b>6.1</b> Preparación de datos</a></li>
+<li class="chapter" data-level="6.2" data-path="modelado.html"><a href="modelado.html#entrenamiento-de-modelos"><i class="fa fa-check"></i><b>6.2</b> Entrenamiento de modelos</a>
+<ul>
+<li class="chapter" data-level="6.2.1" data-path="modelado.html"><a href="modelado.html#regresi%C3%B3n-log%C3%ADstica"><i class="fa fa-check"></i><b>6.2.1</b> Regresión Logística</a></li>
+<li class="chapter" data-level="6.2.2" data-path="modelado.html"><a href="modelado.html#random-forest"><i class="fa fa-check"></i><b>6.2.2</b> Random Forest</a></li>
+<li class="chapter" data-level="6.2.3" data-path="modelado.html"><a href="modelado.html#xgboost"><i class="fa fa-check"></i><b>6.2.3</b> XGBoost</a></li>
+</ul></li>
+<li class="chapter" data-level="6.3" data-path="modelado.html"><a href="modelado.html#tabla-comparativa"><i class="fa fa-check"></i><b>6.3</b> Tabla comparativa</a></li>
+<li class="chapter" data-level="6.4" data-path="modelado.html"><a href="modelado.html#curvas-roc-comparativas"><i class="fa fa-check"></i><b>6.4</b> Curvas ROC comparativas</a></li>
+<li class="chapter" data-level="6.5" data-path="modelado.html"><a href="modelado.html#threshold-tuning-xgboost"><i class="fa fa-check"></i><b>6.5</b> Threshold tuning — XGBoost</a></li>
+<li class="chapter" data-level="6.6" data-path="modelado.html"><a href="modelado.html#importancia-de-variables-xgboost"><i class="fa fa-check"></i><b>6.6</b> Importancia de variables — XGBoost</a></li>
+<li class="chapter" data-level="6.7" data-path="modelado.html"><a href="modelado.html#modelo-final-xgboost-con-12-variables"><i class="fa fa-check"></i><b>6.7</b> Modelo final: XGBoost con 12 variables</a></li>
+</ul></li>
+<li class="chapter" data-level="7" data-path="referencias.html"><a href="referencias.html"><i class="fa fa-check"></i><b>7</b> Referencias</a>
+<ul>
+<li class="chapter" data-level="7.1" data-path="referencias.html"><a href="referencias.html#bibliograf%C3%ADa"><i class="fa fa-check"></i><b>7.1</b> Bibliografía</a></li>
+<li class="chapter" data-level="7.2" data-path="referencias.html"><a href="referencias.html#paquetes-de-r-utilizados"><i class="fa fa-check"></i><b>7.2</b> Paquetes de R utilizados</a></li>
+</ul></li>
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Análisis Exploratorio de Indicadores de Salud y Factores Asociados a Enfermedades Cardíacas</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="hallazgos" class="section level1 hasAnchor" number="5">
+<h1><span class="header-section-number">Capítulo 5</span> Hallazgos principales<a href="hallazgos.html#hallazgos" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<p>El análisis exploratorio sobre el dataset BRFSS 2015 permite extraer los siguientes
+hallazgos en relación con el objetivo general.</p>
+<div id="factores-principales" class="section level2 hasAnchor" number="5.1">
+<h2><span class="header-section-number">5.1</span> Factores con mayor asociación<a href="hallazgos.html#factores-principales" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<div id="factores-clínicos-y-funcionales-alta-magnitud" class="section level3 hasAnchor" number="5.1.1">
+<h3><span class="header-section-number">5.1.1</span> Factores clínicos y funcionales (alta magnitud)<a href="hallazgos.html#factores-cl%C3%ADnicos-y-funcionales-alta-magnitud" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<table>
+<colgroup>
+<col width="33%" />
+<col width="33%" />
+<col width="33%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Variable</th>
+<th>V de Cramér</th>
+<th>Observación clave</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>GenHlth</strong></td>
+<td>0.274</td>
+<td>Gradiente casi lineal: 2.2% (Excelente) → 34.0% (Mala)</td>
+</tr>
+<tr class="even">
+<td><strong>Age</strong></td>
+<td>0.233</td>
+<td>Monotónico: 0.5% (18–24) → 24.0% (80+)</td>
+</tr>
+<tr class="odd">
+<td><strong>DiffWalk</strong></td>
+<td>0.213</td>
+<td>3.5× más riesgo en quienes reportan dificultad funcional</td>
+</tr>
+<tr class="even">
+<td><strong>HighBP</strong></td>
+<td>0.209</td>
+<td>Cuadruplica la tasa: 16.5% vs 4.1%</td>
+</tr>
+<tr class="odd">
+<td><strong>Stroke</strong></td>
+<td>0.203</td>
+<td>Tasa absoluta más alta entre binarias: 38.3%</td>
+</tr>
+<tr class="even">
+<td><strong>Diabetes</strong></td>
+<td>0.180</td>
+<td>Gradiente triplicado: 7.2% → 14.3% → 22.3%</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="factores-conductuales-magnitud-moderada" class="section level3 hasAnchor" number="5.1.2">
+<h3><span class="header-section-number">5.1.2</span> Factores conductuales (magnitud moderada)<a href="hallazgos.html#factores-conductuales-magnitud-moderada" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<ul>
+<li>El <strong>tabaquismo</strong> (V=0.114) duplica el riesgo (13.2% vs 6.4%).</li>
+<li>La <strong>inactividad física</strong> (V=0.087) eleva la tasa 1.75× frente a personas activas.</li>
+<li>El <strong>sexo</strong> (V=0.086): hombres 12.3% vs mujeres 7.2%.</li>
+</ul>
+</div>
+<div id="determinantes-socioeconómicos" class="section level3 hasAnchor" number="5.1.3">
+<h3><span class="header-section-number">5.1.3</span> Determinantes socioeconómicos<a href="hallazgos.html#determinantes-socioecon%C3%B3micos" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>A mayor <strong>ingreso</strong> (V=0.144) y <strong>nivel educativo</strong> (V=0.101), menor tasa de
+enfermedad cardíaca, evidenciando inequidades estructurales en salud cardiovascular.</p>
+</div>
+</div>
+<div id="interacciones-hallazgos" class="section level2 hasAnchor" number="5.2">
+<h2><span class="header-section-number">5.2</span> Interacciones sinérgicas<a href="hallazgos.html#interacciones-hallazgos" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<table class="table table-striped table-hover" style="color: black; width: auto !important; margin-left: auto; margin-right: auto;">
+<caption>
+<span id="tab:tabla-interacciones">Table 5.1: </span><span id="tab:tabla-interacciones">Table 5.2: </span>Efectos sinérgicos entre pares de factores de riesgo
+</caption>
+<thead>
+<tr>
+<th style="text-align:left;">
+Combinación de factores
+</th>
+<th style="text-align:left;">
+Tasa (ambos presentes)
+</th>
+<th style="text-align:left;">
+Tasa (referencia)
+</th>
+<th style="text-align:left;">
+Factor
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+HighBP × HighChol
+</td>
+<td style="text-align:left;">
+21.1%
+</td>
+<td style="text-align:left;">
+2.8%
+</td>
+<td style="text-align:left;">
+7.5×
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Stroke × HighBP
+</td>
+<td style="text-align:left;">
+42.0%
+</td>
+<td style="text-align:left;">
+7.1% (sin ACV + sin HTA)
+</td>
+<td style="text-align:left;">
+5.9×
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+DiffWalk × GenHlth (Mala)
+</td>
+<td style="text-align:left;">
+36.8%
+</td>
+<td style="text-align:left;">
+2.2% (sin dif. + Excelente)
+</td>
+<td style="text-align:left;">
+16.7×
+</td>
+</tr>
+</tbody>
+</table>
+<p>Las interacciones refuerzan la <strong>naturaleza multifactorial</strong> de la enfermedad cardíaca
+y anticipan que modelos capaces de capturar relaciones no lineales (como XGBoost)
+serán más efectivos.</p>
+</div>
+<div id="variables-bajas" class="section level2 hasAnchor" number="5.3">
+<h2><span class="header-section-number">5.3</span> Variables con baja utilidad individual<a href="hallazgos.html#variables-bajas" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<table class="table table-striped table-hover" style="font-size: 11px; color: black; width: auto !important; margin-left: auto; margin-right: auto;">
+<caption style="font-size: initial !important;">
+<span id="tab:tabla-bajas">Table 5.3: </span><span id="tab:tabla-bajas">Table 5.4: </span>Variables con menor poder discriminatorio
+</caption>
+<thead>
+<tr>
+<th style="text-align:left;">
+Variable
+</th>
+<th style="text-align:right;">
+V de Cramér
+</th>
+<th style="text-align:left;">
+Interpretación
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+Fruits
+</td>
+<td style="text-align:right;">
+0.0198
+</td>
+<td style="text-align:left;">
+Diferencia de tasas marginal (10.2% vs 9.0%)
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+AnyHealthcare
+</td>
+<td style="text-align:right;">
+0.0187
+</td>
+<td style="text-align:left;">
+Sesgo de detección: cobertura médica → más diagnósticos
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+HvyAlcoholConsump
+</td>
+<td style="text-align:right;">
+0.0290
+</td>
+<td style="text-align:left;">
+Asociación inversa: sesgo del ‘bebedor enfermo’
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Veggies
+</td>
+<td style="text-align:right;">
+0.0392
+</td>
+<td style="text-align:left;">
+Efecto dietético aislado modesto
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+CholCheck
+</td>
+<td style="text-align:right;">
+0.0442
+</td>
+<td style="text-align:left;">
+Sesgo de detección similar a AnyHealthcare
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="consideraciones-modelado" class="section level2 hasAnchor" number="5.4">
+<h2><span class="header-section-number">5.4</span> Consideraciones para el modelado<a href="hallazgos.html#consideraciones-modelado" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<table class="table table-striped table-hover" style="color: black; width: auto !important; margin-left: auto; margin-right: auto;">
+<caption>
+<span id="tab:consideraciones">Table 5.5: </span><span id="tab:consideraciones">Table 5.6: </span>Consideraciones para la etapa de modelado
+</caption>
+<thead>
+<tr>
+<th style="text-align:left;">
+Aspecto
+</th>
+<th style="text-align:left;">
+Acción recomendada
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;font-weight: bold;">
+Desbalance de clases
+</td>
+<td style="text-align:left;">
+Aplicar class_weight=‘balanced’ / scale_pos_weight; optimizar Recall
+</td>
+</tr>
+<tr>
+<td style="text-align:left;font-weight: bold;">
+Variables prioritarias
+</td>
+<td style="text-align:left;">
+Incluir obligatoriamente: GenHlth, Age, DiffWalk, HighBP, Stroke, HighChol
+</td>
+</tr>
+<tr>
+<td style="text-align:left;font-weight: bold;">
+Distribuciones asimétricas
+</td>
+<td style="text-align:left;">
+BMI, MentHlth y PhysHlth requieren escalado o modelos robustos a outliers
+</td>
+</tr>
+<tr>
+<td style="text-align:left;font-weight: bold;">
+Variables de baja utilidad
+</td>
+<td style="text-align:left;">
+Fruits, AnyHealthcare, HvyAlcoholConsump → evaluar para reducción dimensional
+</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="bivariado.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="modelado.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+  "sharing": {
+    "github": true,
+    "facebook": true,
+    "twitter": true,
+    "linkedin": false,
+    "weibo": false,
+    "instapaper": false,
+    "vk": false,
+    "whatsapp": false,
+    "all": ["facebook", "twitter", "linkedin", "weibo", "instapaper"]
+  },
+  "fontsettings": {
+    "theme": "white",
+    "family": "sans",
+    "size": 2
+  },
+  "edit": {
+    "link": null,
+    "text": null
+  },
+  "history": {
+    "link": null,
+    "text": null
+  },
+  "view": {
+    "link": null,
+    "text": null
+  },
+  "download": ["eda-cardiaco.pdf"],
+  "search": {
+    "engine": "fuse",
+    "options": null
+  },
+  "toc": {
+    "collapse": "subsection",
+    "scroll_highlight": true
+  },
+  "toolbar": {
+    "position": "fixed"
+  }
+});
+});
+</script>
+
+</body>
+
+</html>
